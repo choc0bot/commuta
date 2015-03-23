@@ -64,15 +64,13 @@ def commute_details():
     activities = client.get_activities()
     distance_count = 0
     commute_count = 0
-    elapsed_count = datetime.datetime(100,1,1,0,0,0)
+    elapsed_count = 0
     for act in activities:
       if act.name == "Commute":
         commute_count += 1
         distance_count += float(act.distance)/1000
-        elapsed_count = elapsed_count + datetime.timedelta(0,act.elapsed_time)
-
-    return render_template('commute_details.html', total_commutes=commute_count, total_distance=round(distance_count,2), total_elapsed_time=str(datetime.timedelta(elapsed_count)))
-
+        elapsed_count += datetime.timedelta.total_seconds(act.elapsed_time)
+    return render_template('commute_details.html', total_commutes=commute_count, total_distance=round(distance_count,2),  total_elapsed_time=str(datetime.timedelta(seconds=elapsed_count)))
 
 def login():
     app_url = 'http://127.0.0.1:5000'
