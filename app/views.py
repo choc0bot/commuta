@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, session, url_for, redirect, request
 from stravalib.client import Client
 import config as cfg
+import datetime
 
 TOKEN = ""
 MY_STRAVA_CLIENT_ID = cfg.MSCID
@@ -46,12 +47,31 @@ def commute():
     athlete = client.get_athlete()
     activities = client.get_activities()
     commute_count = 0
-    for a in activities:
-      if a.name == "Commute":
+    for act in activities:
+      if act.name == "Commute":
         commute_count += 1
     commute_saving = 3.58 * commute_count
 
     return render_template('commute.html', firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving)
+
+@app.route('/commute_details')
+def commute_details():
+  global TOKEN
+  if TOKEN == "":
+    return redirect('/login')
+  else:
+    client = Client(TOKEN)
+    activities = client.get_activities()
+    distance_count = 0
+    commute_count = 0
+    elapsed_count = datetime.datetime(100,1,1,0,0,0)
+    for act in activities:
+      if act.name == "Commute":
+        commute_count += 1
+        distance_count += float(act.distance)/1000
+        elapsed_count = elapsed_count + datetime.timedelta(0,act.elapsed_time)
+
+    return render_template('commute_details.html', total_commutes=commute_count, total_distance=round(distance_count,2), total_elapsed_time=str(datetime.timedelta(elapsed_count)))
 
 
 def login():
