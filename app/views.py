@@ -1,8 +1,10 @@
 from app import app
-from flask import render_template, session, url_for, redirect, request
+from flask import render_template, flash, session, url_for, redirect, request
 from stravalib.client import Client
 import config as cfg
 import datetime
+from .forms import LoginForm
+from .forms import SettingsForm
 
 TOKEN = ""
 MY_STRAVA_CLIENT_ID = cfg.MSCID
@@ -72,7 +74,29 @@ def commute_details():
         elapsed_count += datetime.timedelta.total_seconds(act.elapsed_time)
     return render_template('commute_details.html', total_commutes=commute_count, total_distance=round(distance_count,2),  total_elapsed_time=str(datetime.timedelta(seconds=elapsed_count)))
 
-def login():
-    app_url = 'http://127.0.0.1:5000'
-    callback_url = app_url + url_for('oauth_authorized')
-    return strava.authorize(callback=callback_url)
+#def login():
+#    app_url = 'http://127.0.0.1:5000'
+#    callback_url = app_url + url_for('oauth_authorized')
+#    return strava.authorize(callback=callback_url)
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+  form = SettingsForm()
+  if form.validate_on_submit():
+    #flash('Settings saved')
+    return redirect('/index')
+  return render_template('settings.html', 
+                           title='Settings',
+                           form=form)
+
+@app.route('/user', methods=['GET', 'POST'])
+def user():
+  form = LoginForm()
+  if form.validate_on_submit():
+    flash('Login requested for OpenID="%s", remember_me=%s' %
+          (form.openid.data, str(form.remember_me.data)))
+    return redirect('/index')
+  return render_template('login_user.html', 
+                         title='Sign In',
+                         form=form,
+                         providers=app.config['OPENID_PROVIDERS'])

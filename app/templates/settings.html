@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="jumbotron">
+<div class="container">
+    <h3>Commute Settings</h3>
+    <form action="" method="post" name="settings">
+      {{ form.hidden_tag() }}
+          <p>{{ form.commute_tag }} commute_tag</p>
+          <p>Please enter Commute string:<br>
+          {{ form.commute_string(size=40) }}<br><p>
+          <p>Please enter goal name:<br>
+          {{ form.goal_string(size=40) }}<br><p>
+          <p>Please enter goal amount:<br>
+          {{ form.goal_number(size=20) }}<br><p>
+          {% for error in form.goal_number.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}<br><p>
+          <p>Please enter savings amount:<br>
+          {{ form.savings(size=20) }}<br><p>
+          {% for error in form.savings.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}<br>
+      </p>
+      <p><input type="submit" value="Save"></p>
+  </form>
+
+
+
+{% endblock %}
