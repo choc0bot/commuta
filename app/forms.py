@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, BooleanField
+from wtforms import StringField, BooleanField, FloatField
 from wtforms.validators import DataRequired, NumberRange
 
 class LoginForm(Form):
@@ -10,5 +10,5 @@ class SettingsForm(Form):
     commute_tag = BooleanField('commute_tag', default=False)
     commute_string = StringField('commute_string')
     goal_string = StringField('goal_string')
-    goal_number = StringField('goal_number', validators=[NumberRange(1,999999)])
-    savings = StringField('savings', validators=[NumberRange(1,999)])
+    goal_number = FloatField('goal_number', validators=[NumberRange(1,999999)])
+    savings = FloatField('savings', validators=[NumberRange(1,999)])

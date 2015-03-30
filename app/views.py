@@ -83,7 +83,12 @@ def commute_details():
 def settings():
   form = SettingsForm()
   if form.validate_on_submit():
-    #flash('Settings saved')
+    commute.commute_tag = SettingsForm.commute_tag.data
+    commute.commute_string = SettingsForm.commute_string.data
+    commute.goal_name = SettingsForm.goal_string.data
+    commute.goal_value = SettingsForm.goal_number.data
+    commute.goal_savings = SettingsForm.savings.data
+    flash('Settings saved')
     return redirect('/index')
   return render_template('settings.html', 
                            title='Settings',
