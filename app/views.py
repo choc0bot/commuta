@@ -1,4 +1,4 @@
-from app import app
+from app import app, db
 from flask import render_template, flash, session, url_for, redirect, request
 from stravalib.client import Client
 import config as cfg
@@ -35,6 +35,8 @@ def authorized():
   TOKEN = access_token
   # Now store that access token somewhere (a database?)
   client.access_token = access_token
+  db.session.query('INSERT INTO commutra(token) VALUES(access_token)')
+  flash('Your changes have been saved.')
   athlete = client.get_athlete()
   return render_template('success.html', athlete=athlete, token=access_token)
 
