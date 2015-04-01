@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="jumbotron">
 <div class="container">
-	<h2><span class="label label-success">{{ total_commutes }} commutes</span></h2>
-    <h2><span class="label label-success">{{ total_distance }} kms</span></h2>
-    <h2><span class="label label-primary">{{total_elapsed_time}} hours</span></h2>
+<div class="alert alert-info">
+	<h1><span>{{ total_commutes }} commutes</span></h1>
+</div>
+<div class="alert alert-success">
+    <h1><span>{{ total_distance }} kms</span></h1>
+</div>
+<div class="alert alert-info">
+    <h1><span>{{total_elapsed_time}} hours</span></h1>
 </div>
 </div>
 
