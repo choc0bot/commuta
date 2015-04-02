@@ -1,8 +1,9 @@
 from app import app, db
-from flask import render_template, flash, session, url_for, redirect, request
+from flask import render_template, flash, session, url_for, redirect, request, g
 from stravalib.client import Client
 import config as cfg
 import datetime
+from .models import commutra
 from .forms import LoginForm
 from .forms import SettingsForm
 
@@ -35,8 +36,13 @@ def authorized():
   TOKEN = access_token
   # Now store that access token somewhere (a database?)
   client.access_token = access_token
-  db.session.query('INSERT INTO commutra(token) VALUES(access_token)')
-  flash('Your changes have been saved.')
+  user = commutra(token=access_token)
+  if user.is_authenticated():
+    flash('Welcome back')
+  else:
+    db.session.add(user)
+    db.session.commit()
+    flash('Your changes have been saved.')
   athlete = client.get_athlete()
   return render_template('success.html', athlete=athlete, token=access_token)
 
@@ -90,11 +96,14 @@ def settings():
     commute.goal_name = SettingsForm.goal_string.data
     commute.goal_value = SettingsForm.goal_number.data
     commute.goal_savings = SettingsForm.savings.data
-    flash('Settings saved')
-    return redirect('/index')
-  return render_template('settings.html', 
-                           title='Settings',
-                           form=form)
+    user = commutra(token=TOKEN,commute_tag=commute.commute_tag,commute_string=commute.commute_string,goal_name=commute.goal_name,goal_value=commute.goal_value,goal_savings=commute.goal_savings)
+    if user.is_authenticated():
+      db.session.add(user)
+      db.session.commit()
+      flash('Your changes have been saved.')
+      flash('Settings saved')
+      return redirect('/index')
+  return render_template('settings.html',title='Settings',form=form)
 
 @app.route('/user', methods=['GET', 'POST'])
 def user():
