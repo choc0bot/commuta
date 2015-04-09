@@ -1,13 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
 
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+      google.load("visualization", "1", {packages:["gauge"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Goal', {{ percent_complete }}],
+        ]);
+
+        var options = {
+          width: 600, height: 220,
+          greenFrom: 85, greenTo: 100,
+          yellowFrom:60, yellowTo: 85,
+          redFrom: 0, redTo: 10,
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+
+        setInterval(function() {
+          data.setValue(0, 1, {{ percent_complete}});
+          chart.draw(data, options);
+        }, 26000);
+
+      }
+    </script>
+
+
 <div class="jumbotron">
 <div class="container">
     <h2>Commuting overview for {{firstname}} {{lastname}}</h2>
     <h2><span class="label label-success">You have {{ total_commutes }} total commutes</span></h2>
     <h2><span class="label label-primary">${{total_savings}} saved</span></h2>
-    <h2><span class="label label-warning">${{total_savings}} remaing</span></h2>
+    <h2><span class="label label-warning">${{goal}} remaining</span></h2>
+    <h2><span class="label label-warning">{{ percent_complete}}</span></h2>
+    <div id="chart_div" style="width: 400px; height: 120px;"></div>
 </div>
+
 <a href='commute_details'>details</a>
 </div>
 

@@ -56,13 +56,16 @@ def commute():
     client = Client(TOKEN)
     athlete = client.get_athlete()
     activities = client.get_activities()
+    settings = commutra.query.filter_by(token=TOKEN).first()
     commute_count = 0
     for act in activities:
       if "commute" in act.name.lower():
         commute_count += 1
-    commute_saving = 3.58 * commute_count
+    commute_saving = settings.goal_savings * commute_count
+    commute_goal = settings.goal_value - commute_saving
+    commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
 
-    return render_template('commute.html', firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving)
+    return render_template('commute.html', firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
 
 @app.route('/commute_details')
 def commute_details():
