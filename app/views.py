@@ -58,7 +58,7 @@ def commute():
     activities = client.get_activities()
     commute_count = 0
     for act in activities:
-      if act.name == "Commute":
+      if "commute" in act.name.lower():
         commute_count += 1
     commute_saving = 3.58 * commute_count
 
@@ -76,7 +76,7 @@ def commute_details():
     commute_count = 0
     elapsed_count = 0
     for act in activities:
-      if act.name == "Commute":
+      if "commute" in act.name.lower():
         commute_count += 1
         distance_count += float(act.distance)/1000
         elapsed_count += datetime.timedelta.total_seconds(act.elapsed_time)
@@ -89,16 +89,23 @@ def commute_details():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+  global TOKEN
   form = SettingsForm()
   if form.validate_on_submit():
-    commute.commute_tag = SettingsForm.commute_tag.data
-    commute.commute_string = SettingsForm.commute_string.data
-    commute.goal_name = SettingsForm.goal_string.data
-    commute.goal_value = SettingsForm.goal_number.data
-    commute.goal_savings = SettingsForm.savings.data
-    user = commutra(token=TOKEN,commute_tag=commute.commute_tag,commute_string=commute.commute_string,goal_name=commute.goal_name,goal_value=commute.goal_value,goal_savings=commute.goal_savings)
+    commute.commute_tag = form.commute_tag.data
+    commute.commute_string = form.commute_string.data
+    commute.goal_name = form.goal_string.data
+    commute.goal_value = form.goal_number.data
+    commute.goal_savings = form.savings.data
+    #user = commutra(token=TOKEN,commute_tag=commute.commute_tag,commute_string=commute.commute_string,goal_name=commute.goal_name,goal_value=commute.goal_value,goal_savings=commute.goal_savings)
+    user = commutra(token=TOKEN)
     if user.is_authenticated():
-      db.session.add(user)
+      user = commutra.query.filter_by(token=TOKEN).first()
+      user.commute_tag = commute.commute_tag
+      user.commute_string=commute.commute_string
+      user.goal_name=commute.goal_name
+      user.goal_value=commute.goal_value
+      user.goal_savings=commute.goal_savings
       db.session.commit()
       flash('Your changes have been saved.')
       flash('Settings saved')
