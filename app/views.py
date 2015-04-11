@@ -11,10 +11,15 @@ TOKEN = ""
 MY_STRAVA_CLIENT_ID = cfg.MSCID
 MY_STRAVA_CLIENT_SECRET = cfg.MYCS
 
+@app.template_filter()
+def datetimefilter(value, time_format='%Y-%m-%d'):
+    """convert a datetime to a different format."""
+    return value.strftime(time_format)
+
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html',title='Home')
+    return render_template('index.html', title='Home')
 
 
 @app.route('/login')
@@ -46,6 +51,22 @@ def authorized():
     athlete = client.get_athlete()
     return render_template('success.html', athlete=athlete, token=access_token)
 
+def check_monthly(date_to_test, local_time):
+    if date_to_test.year < (local_time.year):
+        return False
+    elif date_to_test.month < (local_time.month - 1):
+        return False
+    elif date_to_test.day < local_time.day:
+        return False
+    else:
+        return True
+
+def convert_timedelta(delta_to_convert):
+    seconds = delta_to_convert.total_seconds()
+    #hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    return minutes
+
 
 @app.route('/commute')
 def commute():
@@ -59,20 +80,29 @@ def commute():
         settings = commutra.query.filter_by(token=TOKEN).first()
         flag = settings.commute_tag
         local_time = datetime.date.today()
+        monthly_rides = []
         commute_count = 0
         for act in activities:
             if flag == True:
                 if act.commute == True:
                     commute_count += 1
-                    #if act.start_date_local
+                    if check_monthly(act.start_date_local, local_time):
+                        ride_date = act.start_date_local
+                        ride_data = [ride_date.date, convert_timedelta(act.elapsed_time)]
+                        monthly_rides.append(ride_data)
             else:
                 if settings.commute_string.lower() in act.name.lower():
                     commute_count += 1
+                    if check_monthly(act.start_date_local, local_time):
+                        ride_date = act.start_date_local
+                        #r_date = ride_date.strftime('%m/%d/%Y')
+                        #ride_data = [r_date, convert_timedelta(act.elapsed_time)]
+                        monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
         commute_saving = settings.goal_savings * commute_count
         commute_goal = settings.goal_value - commute_saving
         commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
 
-    return render_template('commute.html', testtime = local_time, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
+    return render_template('commute.html', monthly_rides = monthly_rides, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
 
 @app.route('/commute_details')
 def commute_details():
