@@ -1,13 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-<script>
-  jQuery(document).ready(function(){
-    $( "#progressbar" ).progressbar({
-      value: {{ percent_complete}}
-    });
-  });
-</script>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
       google.load("visualization", "1", {packages:["gauge"]});
@@ -53,6 +46,7 @@
         ]);
         // Set chart options
             var options = {
+              legend: 'none',
               chart: {
                 vAxis: {title: "Time"},
                 hAxis: {title: "Date"},
@@ -86,13 +80,12 @@
             </div>
           </div>
         <div class="col-md-4">
-          <div id="chart_div" style="width: 400px; height: 120px;"></div>
+          <div id="chart_div" ></div>
         </div>
   </div>
   <div class="alert alert-success">
     <h1><span>${{goal}} remaining</span></h1>
   </div> 
-  <div style="width: 500px;" id="progressbar"></div>
 
 
 <a href='commute_details'>details</a>
