@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, session, url_for, redirect, request, g
-from stravalib.client import Client
+from stravalib.client import Client, unithelper
 import config as cfg
 import datetime
 from .models import commutra
@@ -49,9 +49,11 @@ def authorized():
       db.session.commit()
       flash('Your changes have been saved.')
     athlete = client.get_athlete()
-    return render_template('success.html', athlete=athlete, token=access_token)
+    return render_template('index.html', athlete=athlete, token=access_token)
 
 def check_monthly(date_to_test, local_time):
+    if date_to_test.month == (local_time.month):
+        return True
     if date_to_test.year < (local_time.year):
         return False
     elif date_to_test.month < (local_time.month - 1):
@@ -81,28 +83,30 @@ def commute():
         flag = settings.commute_tag
         local_time = datetime.date.today()
         monthly_rides = []
+        monthly_savings = []
         commute_count = 0
+        commute_distance = 0.0
         for act in activities:
             if flag == True:
                 if act.commute == True:
                     commute_count += 1
+                    commute_distance += float(unithelper.kilometers(act.distance))
                     if check_monthly(act.start_date_local, local_time):
                         ride_date = act.start_date_local
-                        ride_data = [ride_date.date, convert_timedelta(act.elapsed_time)]
-                        monthly_rides.append(ride_data)
+                        monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
             else:
                 if settings.commute_string.lower() in act.name.lower():
                     commute_count += 1
+                    commute_distance += float(unithelper.kilometers(act.distance))
+                    ride_date = act.start_date_local
+                    monthly_savings.append(ride_date.month)
                     if check_monthly(act.start_date_local, local_time):
-                        ride_date = act.start_date_local
-                        #r_date = ride_date.strftime('%m/%d/%Y')
-                        #ride_data = [r_date, convert_timedelta(act.elapsed_time)]
                         monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
         commute_saving = settings.goal_savings * commute_count
         commute_goal = settings.goal_value - commute_saving
         commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
 
-    return render_template('commute.html', monthly_rides = reversed(monthly_rides), firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
+    return render_template('commute.html', total_distance = round(commute_distance,2), monthly_savings=monthly_savings, monthly_rides = reversed(monthly_rides), firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
 
 @app.route('/commute_details')
 def commute_details():
@@ -125,7 +129,7 @@ def commute_details():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    global TOKEN    
+    global TOKEN
     form = SettingsForm()
     if form.validate_on_submit():
         commute.commute_tag = form.commute_tag.data

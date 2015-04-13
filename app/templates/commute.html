@@ -1,43 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
 
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script type="text/javascript">
-      google.load("visualization", "1", {packages:["gauge"]});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Label', 'Value'],
-          ['Goal', {{ percent_complete }}],
-        ]);
-
-        var options = {
-          width: 600, height: 220,
-          greenFrom: 85, greenTo: 100,
-          yellowFrom:60, yellowTo: 85,
-          redFrom: 0, redTo: 10,
-          minorTicks: 5
-        };
-
-        var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
-
-        chart.draw(data, options);
-
-        setInterval(function() {
-          data.setValue(0, 1, {{ percent_complete}});
-          chart.draw(data, options);
-        }, 26000);
-
+<style>
+      #g1, #g2, #g3 {
+        width:400px; height:320px;
+        display: inline-block;
+        margin: 1em;
       }
-</script>
+</style>
+
+<script src="static/js/raphael.2.1.0.min.js"></script>
+    <script src="static/js/justgage.1.0.1.min.js"></script>
+    <script>
+      var g1;
+      
+      window.onload = function(){
+var g1 = new JustGage({
+          id: "g1", 
+          value: {{ percent_complete }}, 
+          min: 0,
+          max: 100,
+          title: "Goal Progress",
+          label: "% Complete"
+        });
+      
+ 
+
+      };
+    </script>
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
 <script type="text/javascript">
 //# | datetimefilter }},
-      google.load("visualization", "1", {packages:["corechart"]});
+      google.load("visualization", "1.1", {packages:["bar"]});
       google.setOnLoadCallback(drawVisualization);
       function drawVisualization() {
         var data = google.visualization.arrayToDataTable([
-          ['Date', 'Time'], 
+          ['', 'Time'], 
           {% for ride in monthly_rides %}
           [
             '{{ ride[0] | datetimefilter }}', {{ ride[1] }}
@@ -46,14 +47,15 @@
         ]);
         // Set chart options
             var options = {
-              legend: 'none',
-              chart: {
-                vAxis: {title: "Time"},
-                hAxis: {title: "Date"},
-              }
+            chart: {
+              title: 'Past month of commutes',
+              },
+              legend: { position: 'none' },
+              vAxis: { textPosition: 'none' },
+              hAxis: { textPosition: 'none' },
             };
         // Instantiate and draw our chart, passing in some options.
-        var ride_chart = new google.visualization.ColumnChart(document.getElementById("ride_chart_div"));
+        var ride_chart = new google.charts.Bar(document.getElementById("ride_chart_div"));
         //chart.draw(data, google.charts.Column.convertOptions(options));style="width: 90%; height: 80%; margin: 10px"
         ride_chart.draw(data, options);
       }
@@ -77,15 +79,25 @@
                   <h1><span>${{total_savings}} saved</span></h1>
                 </div> 
               </div>
+              <div class="col-md-6">
+                <div class="alert alert-success">
+                  <h1><span>{{total_distance}} kms</span></h1>
+                </div> 
+              </div>
+              <div class="col-md-6">
+                <div class="alert alert-info">
+                  <h1><span>${{goal}} remaining</span></h1>
+                </div> 
+              </div>
             </div>
           </div>
         <div class="col-md-4">
-          <div id="chart_div" ></div>
+          <div id="g1" ></div>
         </div>
   </div>
-  <div class="alert alert-success">
-    <h1><span>${{goal}} remaining</span></h1>
-  </div> 
+  <div>
+    {{ monthly_savings }}
+  </div>
 
 
 <a href='commute_details'>details</a>
