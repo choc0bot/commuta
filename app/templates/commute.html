@@ -23,6 +23,12 @@ var g1 = new JustGage({
           title: "Goal Progress",
           label: "% Complete"
         });
+<<<<<<< HEAD
+=======
+      
+ 
+
+>>>>>>> parent of e361411... d3 test
       };
     </script>
 
@@ -30,6 +36,10 @@ var g1 = new JustGage({
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
 <script type="text/javascript">
+<<<<<<< HEAD
+=======
+//# | datetimefilter }},
+>>>>>>> parent of e361411... d3 test
       google.load("visualization", "1.1", {packages:["bar"]});
       google.setOnLoadCallback(drawVisualization);
       function drawVisualization() {
@@ -39,6 +49,7 @@ var g1 = new JustGage({
           [
             '{{ ride[0] | datetimefilter }}', {{ ride[1] }}
           ],
+<<<<<<< HEAD
           {% endfor %}
         ]);
         // Set chart options
@@ -86,6 +97,23 @@ var g1 = new JustGage({
         var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
 
         chart.draw(data, options);
+=======
+          {% endfor %}
+        ]);
+        // Set chart options
+            var options = {
+            chart: {
+              title: 'Past month of commutes',
+              },
+              legend: { position: 'none' },
+              vAxis: { textPosition: 'none' },
+              hAxis: { textPosition: 'none' },
+            };
+        // Instantiate and draw our chart, passing in some options.
+        var ride_chart = new google.charts.Bar(document.getElementById("ride_chart_div"));
+        //chart.draw(data, google.charts.Column.convertOptions(options));style="width: 90%; height: 80%; margin: 10px"
+        ride_chart.draw(data, options);
+>>>>>>> parent of e361411... d3 test
       }
     </script>
 
@@ -124,7 +152,11 @@ var g1 = new JustGage({
         </div>
   </div>
   <div>
+<<<<<<< HEAD
     <div id="curve_chart"></div>
+=======
+    {{ monthly_savings }}
+>>>>>>> parent of e361411... d3 test
   </div>
 
 
