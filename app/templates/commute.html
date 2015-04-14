@@ -11,11 +11,11 @@
 
 <script src="static/js/raphael.2.1.0.min.js"></script>
     <script src="static/js/justgage.1.0.1.min.js"></script>
-    <script>
+<script>
       var g1;
       
       window.onload = function(){
-var g1 = new JustGage({
+        var g1 = new JustGage({
           id: "g1", 
           value: {{ percent_complete }}, 
           min: 0,
@@ -23,58 +23,96 @@ var g1 = new JustGage({
           title: "Goal Progress",
           label: "% Complete"
         });
-      
- 
-
       };
-    </script>
+</script>
 
 
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-<script type="text/javascript">
-//# | datetimefilter }},
-      google.load("visualization", "1.1", {packages:["bar"]});
-      google.setOnLoadCallback(drawVisualization);
-      function drawVisualization() {
-        var data = google.visualization.arrayToDataTable([
-          ['', 'Time'], 
-          {% for ride in monthly_rides %}
-          [
-            '{{ ride[0] | datetimefilter }}', {{ ride[1] }}
-          ],
+<script src='http://d3js.org/d3.v3.min.js'></script>
+<link rel="stylesheet" href="static/nv.d3.css">
+<script type="text/javascript" src="static/nv.d3.min.js"></script>
+
+<style>
+
+#chart svg {
+  height: 200px;
+}
+#piechart svg {
+  height: 200px;
+}
+
+</style>
+<script>
+var piedata = [{
+            key: "DOW",
+            values: [
+            {% for day in day_count %}
+          {
+            "label" : '{{ day[0] }}',
+            "value" : {{ day[1] }}
+          },
           {% endfor %}
-        ]);
-        // Set chart options
-            var options = {
-            chart: {
-              title: 'Past month of commutes',
-              },
-              legend: { position: 'none' },
-              vAxis: { textPosition: 'none' },
-              hAxis: { textPosition: 'none' },
-            };
-        // Instantiate and draw our chart, passing in some options.
-        var ride_chart = new google.charts.Bar(document.getElementById("ride_chart_div"));
-        //chart.draw(data, google.charts.Column.convertOptions(options));style="width: 90%; height: 80%; margin: 10px"
-        ride_chart.draw(data, options);
-      }
-    </script>
+        ]}];
+nv.addGraph(function() {
+  var pchart = nv.models.pieChart()
+      .x(function(d) { return d.label })
+      .y(function(d) { return d.value })
+      .showLabels(true);
+
+    d3.select("#piechart svg")
+        .datum(piedata)
+        .transition().duration(350)
+        .call(pchart);
+
+  return pchart;
+});
+
+var data = [{
+            key: "RIDES",
+            values: [
+            {% for ride in monthly_rides %}
+          {
+            "label" : '{{ ride[0] | datetimefilter }}',
+            "value" : {{ ride[1] }}
+          },
+          {% endfor %}
+        ]}];
+nv.addGraph(function() {
+  var chart = nv.models.discreteBarChart()
+    .x(function(d) { return d.label })
+    .y(function(d) { return d.value })
+    .showXAxis(false)
+    .tooltips(true)
+
+
+  d3.select('#chart svg')
+    .datum(data)
+    .transition().duration(500)
+    .call(chart);
+
+
+  return chart;
+});
+
+
+</script>
 
 
 
   <div class="container">
     <h2>Commuting overview for {{firstname}} {{lastname}}</h2>
       <div class="row">
-          <div class="col-md-8">
-            <div id="ride_chart_div" ></div>
+            <div class="col-md-8">
+                <div id="chart">
+                    <svg></svg>
+                </div>
             <div class="row">
               <div class="col-md-6">
                 <div class="alert alert-info">
                   <h1><span>{{ total_commutes }} commutes</span></h1>
                 </div>
               </div>
-              <div class="col-md-6">
+            <div class="col-md-6">
                 <div class="alert alert-success">
                   <h1><span>${{total_savings}} saved</span></h1>
                 </div> 
@@ -92,11 +130,15 @@ var g1 = new JustGage({
             </div>
           </div>
         <div class="col-md-4">
-          <div id="g1" ></div>
+            <div id="g1" ></div>
+            <div id="pchart" style="height: 100px; " >
+                <svg></svg>
+            </div>
         </div>
   </div>
   <div>
     {{ monthly_savings }}
+    {{day_count}}
   </div>
 
 
