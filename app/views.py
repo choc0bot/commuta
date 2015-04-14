@@ -3,9 +3,11 @@ from flask import render_template, flash, session, url_for, redirect, request, g
 from stravalib.client import Client, unithelper
 import config as cfg
 import datetime
+from collections import Counter
 from .models import commutra
 from .forms import LoginForm
 from .forms import SettingsForm
+import json
 
 TOKEN = ""
 MY_STRAVA_CLIENT_ID = cfg.MSCID
@@ -69,25 +71,6 @@ def convert_timedelta(delta_to_convert):
     minutes = (seconds % 3600) // 60
     return minutes
 
-<<<<<<< HEAD
-def monthly_chart(monthly_savings, goal_savings):
-    initial_m = monthly_savings[-1]
-    m_savings = 0
-    monthly_chart_list = []
-    for m in reversed(monthly_savings):
-        if m == initial_m:
-            m_savings += goal_savings
-        else:
-            month = datetime.date(1900, initial_m, 1).strftime('%B')
-            monthly_chart_list.append([month, round(m_savings,2)])
-            m_savings = goal_savings
-            initial_m = m
-    month = datetime.date(1900, initial_m, 1).strftime('%B')
-    monthly_chart_list.append([month, round(m_savings,2)])
-    return monthly_chart_list
-=======
->>>>>>> parent of e361411... d3 test
-
 @app.route('/commute')
 def commute():
     global TOKEN
@@ -102,6 +85,7 @@ def commute():
         local_time = datetime.date.today()
         monthly_rides = []
         monthly_savings = []
+        dow_rides = []
         commute_count = 0
         commute_distance = 0.0
         for act in activities:
@@ -109,8 +93,8 @@ def commute():
                 if act.commute == True:
                     commute_count += 1
                     commute_distance += float(unithelper.kilometers(act.distance))
+                    ride_date = act.start_date_local
                     if check_monthly(act.start_date_local, local_time):
-                        ride_date = act.start_date_local
                         monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
             else:
                 if settings.commute_string.lower() in act.name.lower():
@@ -118,21 +102,17 @@ def commute():
                     commute_distance += float(unithelper.kilometers(act.distance))
                     ride_date = act.start_date_local
                     monthly_savings.append(ride_date.month)
-                    if check_monthly(act.start_date_local, local_time):
-                        monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
-<<<<<<< HEAD
-        monthly_savings_chart = monthly_chart(monthly_savings, settings.goal_savings)
-=======
->>>>>>> parent of e361411... d3 test
+                    #if check_monthly(act.start_date_local, local_time):
+                    monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+                    dow_rides.append(int(ride_date.weekday()))
+        day_count_list  = list(Counter(dow_rides).items())
+        #day_count_= list(day_count_l).item()
         commute_saving = settings.goal_savings * commute_count
         commute_goal = settings.goal_value - commute_saving
         commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
+        #monthly_rides_json = json.dumps(monthly_rides)
 
-<<<<<<< HEAD
-    return render_template('commute.html', total_distance = round(commute_distance,2), monthly_savings=monthly_savings_chart, monthly_rides = reversed(monthly_rides), firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
-=======
-    return render_template('commute.html', total_distance = round(commute_distance,2), monthly_savings=monthly_savings, monthly_rides = reversed(monthly_rides), firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
->>>>>>> parent of e361411... d3 test
+    return render_template('commute.html', total_distance = round(commute_distance,2), day_count = day_count_list, monthly_savings=monthly_savings, monthly_rides = monthly_rides, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
 
 @app.route('/commute_details')
 def commute_details():

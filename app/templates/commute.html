@@ -2,7 +2,7 @@
 {% block content %}
 
 <style>
-      #g1, #g2, #g3 {
+      #g1 {
         width:400px; height:320px;
         display: inline-block;
         margin: 1em;
@@ -11,11 +11,11 @@
 
 <script src="static/js/raphael.2.1.0.min.js"></script>
     <script src="static/js/justgage.1.0.1.min.js"></script>
-    <script>
+<script>
       var g1;
       
       window.onload = function(){
-var g1 = new JustGage({
+        var g1 = new JustGage({
           id: "g1", 
           value: {{ percent_complete }}, 
           min: 0,
@@ -23,114 +23,105 @@ var g1 = new JustGage({
           title: "Goal Progress",
           label: "% Complete"
         });
-<<<<<<< HEAD
-=======
-      
- 
-
->>>>>>> parent of e361411... d3 test
       };
-    </script>
+</script>
 
 
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-<script type="text/javascript">
-<<<<<<< HEAD
-=======
-//# | datetimefilter }},
->>>>>>> parent of e361411... d3 test
-      google.load("visualization", "1.1", {packages:["bar"]});
-      google.setOnLoadCallback(drawVisualization);
-      function drawVisualization() {
-        var data = google.visualization.arrayToDataTable([
-          ['', 'Time'], 
-          {% for ride in monthly_rides %}
-          [
-            '{{ ride[0] | datetimefilter }}', {{ ride[1] }}
-          ],
-<<<<<<< HEAD
+<script src='http://d3js.org/d3.v3.min.js' type="text/javascript"></script>
+<link rel="stylesheet" href="static/nv.d3.css">
+<script type="text/javascript" src="static/nv.d3.min.js" type="text/javascript"></script>
+
+<style>
+
+#chart svg {
+  height: 200px;
+}
+
+#piechart svg {
+  height: 500px;
+}
+</style>
+<script>
+/**
+* Converts a day number to a string.
+*
+* @method dayOfWeekAsString
+* @param {number} dayIndex
+* @return {Number} Returns day as number
+*/
+function dayOfWeekAsString(dayIndex) {
+  return ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][dayIndex];
+}
+
+var piedata = [
+            {% for day in day_count %}
+          {
+            "label" : dayOfWeekAsString({{ day[0] }}),
+            "value" : {{ day[1] }}
+          },
           {% endfor %}
-        ]);
-        // Set chart options
-            var options = {
-            chart: {
-              title: 'Past month of commutes',
-              },
-              legend: { position: 'none' },
-              vAxis: { textPosition: 'none' },
-              hAxis: { textPosition: 'none' },
-            };
-        // Instantiate and draw our chart, passing in some options.
-        var ride_chart = new google.charts.Bar(document.getElementById("ride_chart_div"));
-        //chart.draw(data, google.charts.Column.convertOptions(options));style="width: 90%; height: 80%; margin: 10px"
-        ride_chart.draw(data, options);
-      }
-    </script>
- <script type="text/javascript"
-          src="https://www.google.com/jsapi?autoload={
-            'modules':[{
-              'name':'visualization',
-              'version':'1',
-              'packages':['corechart']
-            }]
-          }"></script>
-<script type="text/javascript">
-      google.setOnLoadCallback(drawlineChart);
+          ];
+nv.addGraph(function() {
+  var pchart = nv.models.pieChart()
+      .x(function(d) { return d.label })
+      .y(function(d) { return d.value })
+      .showLabels(true);
 
-      function drawlineChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Month', 'Savings'],
-          {% for month in monthly_savings %}
-          [
-            '{{ month[0] }}', {{ month[1] }}
-          ],
+    d3.select("#piechart svg")
+        .datum(piedata)
+        .transition().duration(350)
+        .call(pchart);
+
+  return pchart;
+});
+
+var data = [{
+            key: "RIDES",
+            values: [
+            {% for ride in monthly_rides %}
+          {
+            "label" : '{{ ride[0] | datetimefilter }}',
+            "value" : {{ ride[1] }}
+          },
           {% endfor %}
-        ]);
+        ]}];
+nv.addGraph(function() {
+  var chart = nv.models.discreteBarChart()
+    .x(function(d) { return d.label })
+    .y(function(d) { return d.value })
+    .showXAxis(false)
+    .tooltips(true)
 
-        var options = {
-          title: 'Savings by month',
-          curveType: 'function',
-          legend: { position: 'bottom' }
-        };
 
-        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+  d3.select('#chart svg')
+    .datum(data)
+    .transition().duration(500)
+    .call(chart);
 
-        chart.draw(data, options);
-=======
-          {% endfor %}
-        ]);
-        // Set chart options
-            var options = {
-            chart: {
-              title: 'Past month of commutes',
-              },
-              legend: { position: 'none' },
-              vAxis: { textPosition: 'none' },
-              hAxis: { textPosition: 'none' },
-            };
-        // Instantiate and draw our chart, passing in some options.
-        var ride_chart = new google.charts.Bar(document.getElementById("ride_chart_div"));
-        //chart.draw(data, google.charts.Column.convertOptions(options));style="width: 90%; height: 80%; margin: 10px"
-        ride_chart.draw(data, options);
->>>>>>> parent of e361411... d3 test
-      }
-    </script>
+
+  return chart;
+});
+
+
+</script>
 
 
 
   <div class="container">
     <h2>Commuting overview for {{firstname}} {{lastname}}</h2>
       <div class="row">
-          <div class="col-md-8">
-            <div id="ride_chart_div" ></div>
+            <div class="col-md-8">
+                <div id="chart">
+                    <svg></svg>
+                </div>
             <div class="row">
               <div class="col-md-6">
                 <div class="alert alert-info">
                   <h1><span>{{ total_commutes }} commutes</span></h1>
                 </div>
               </div>
-              <div class="col-md-6">
+            <div class="col-md-6">
                 <div class="alert alert-success">
                   <h1><span>${{total_savings}} saved</span></h1>
                 </div> 
@@ -148,16 +139,15 @@ var g1 = new JustGage({
             </div>
           </div>
         <div class="col-md-4">
-          <div id="g1" ></div>
+            <div id="g1" ></div>
+
         </div>
   </div>
-  <div>
-<<<<<<< HEAD
-    <div id="curve_chart"></div>
-=======
-    {{ monthly_savings }}
->>>>>>> parent of e361411... d3 test
-  </div>
+<div class="col-md-4">
+              <div id="piechart">
+                <svg></svg>
+            </div>
+</div>
 
 
 <a href='commute_details'>details</a>
