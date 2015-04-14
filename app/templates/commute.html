@@ -23,9 +23,6 @@ var g1 = new JustGage({
           title: "Goal Progress",
           label: "% Complete"
         });
-      
- 
-
       };
     </script>
 
@@ -33,7 +30,6 @@ var g1 = new JustGage({
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
 <script type="text/javascript">
-//# | datetimefilter }},
       google.load("visualization", "1.1", {packages:["bar"]});
       google.setOnLoadCallback(drawVisualization);
       function drawVisualization() {
@@ -58,6 +54,38 @@ var g1 = new JustGage({
         var ride_chart = new google.charts.Bar(document.getElementById("ride_chart_div"));
         //chart.draw(data, google.charts.Column.convertOptions(options));style="width: 90%; height: 80%; margin: 10px"
         ride_chart.draw(data, options);
+      }
+    </script>
+ <script type="text/javascript"
+          src="https://www.google.com/jsapi?autoload={
+            'modules':[{
+              'name':'visualization',
+              'version':'1',
+              'packages':['corechart']
+            }]
+          }"></script>
+<script type="text/javascript">
+      google.setOnLoadCallback(drawlineChart);
+
+      function drawlineChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Month', 'Savings'],
+          {% for month in monthly_savings %}
+          [
+            '{{ month[0] }}', {{ month[1] }}
+          ],
+          {% endfor %}
+        ]);
+
+        var options = {
+          title: 'Savings by month',
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
       }
     </script>
 
@@ -96,7 +124,7 @@ var g1 = new JustGage({
         </div>
   </div>
   <div>
-    {{ monthly_savings }}
+    <div id="curve_chart"></div>
   </div>
 
 

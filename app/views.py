@@ -69,6 +69,21 @@ def convert_timedelta(delta_to_convert):
     minutes = (seconds % 3600) // 60
     return minutes
 
+def monthly_chart(monthly_savings, goal_savings):
+    initial_m = monthly_savings[-1]
+    m_savings = 0
+    monthly_chart_list = []
+    for m in reversed(monthly_savings):
+        if m == initial_m:
+            m_savings += goal_savings
+        else:
+            month = datetime.date(1900, initial_m, 1).strftime('%B')
+            monthly_chart_list.append([month, round(m_savings,2)])
+            m_savings = goal_savings
+            initial_m = m
+    month = datetime.date(1900, initial_m, 1).strftime('%B')
+    monthly_chart_list.append([month, round(m_savings,2)])
+    return monthly_chart_list
 
 @app.route('/commute')
 def commute():
@@ -102,11 +117,12 @@ def commute():
                     monthly_savings.append(ride_date.month)
                     if check_monthly(act.start_date_local, local_time):
                         monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+        monthly_savings_chart = monthly_chart(monthly_savings, settings.goal_savings)
         commute_saving = settings.goal_savings * commute_count
         commute_goal = settings.goal_value - commute_saving
         commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
 
-    return render_template('commute.html', total_distance = round(commute_distance,2), monthly_savings=monthly_savings, monthly_rides = reversed(monthly_rides), firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
+    return render_template('commute.html', total_distance = round(commute_distance,2), monthly_savings=monthly_savings_chart, monthly_rides = reversed(monthly_rides), firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
 
 @app.route('/commute_details')
 def commute_details():
