@@ -3,6 +3,7 @@ from flask import render_template, flash, session, url_for, redirect, request, g
 from stravalib.client import Client, unithelper
 import config as cfg
 import datetime
+import calendar
 from collections import Counter
 from .models import commutra
 from .forms import LoginForm
@@ -17,6 +18,11 @@ MY_STRAVA_CLIENT_SECRET = cfg.MYCS
 def datetimefilter(value, time_format='%Y-%m-%d'):
     """convert a datetime to a different format."""
     return value.strftime(time_format)
+
+@app.template_filter()
+def dayfilter(value):
+    """convert a datetime to a different format."""
+    return calendar.day_name[value]
 
 @app.route('/')
 @app.route('/index')

@@ -26,95 +26,71 @@
       };
 </script>
 
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-
-<script src='http://d3js.org/d3.v3.min.js' type="text/javascript"></script>
-<link rel="stylesheet" href="static/nv.d3.css">
-<script type="text/javascript" src="static/nv.d3.min.js" type="text/javascript"></script>
-
-<style>
-
-#chart svg {
-  height: 200px;
-}
-
-#piechart svg {
-  height: 500px;
-}
-</style>
-<script>
-/**
-* Converts a day number to a string.
-*
-* @method dayOfWeekAsString
-* @param {number} dayIndex
-* @return {Number} Returns day as number
-*/
-function dayOfWeekAsString(dayIndex) {
-  return ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][dayIndex];
-}
-
-var piedata = [
-            {% for day in day_count %}
-          {
-            "label" : dayOfWeekAsString({{ day[0] }}),
-            "value" : {{ day[1] }}
-          },
+<script type="text/javascript">
+//# | datetimefilter }},
+      google.load("visualization", "1.1", {packages:["bar"]});
+      google.setOnLoadCallback(drawVisualization);
+      function drawVisualization() {
+        var data = google.visualization.arrayToDataTable([
+          ['', 'Time'], 
+          {% for ride in monthly_rides %}
+          [
+            '{{ ride[0] | datetimefilter }}', {{ ride[1] }}
+          ],
           {% endfor %}
-          ];
-nv.addGraph(function() {
-  var pchart = nv.models.pieChart()
-      .x(function(d) { return d.label })
-      .y(function(d) { return d.value })
-      .showLabels(true);
+        ]);
+        // Set chart options
+            var options = {
+            chart: {
+              title: 'Past month of commutes',
+              },
+              legend: { position: 'none' },
+              vAxis: { textPosition: 'none' },
+              hAxis: { textPosition: 'none' },
+            };
+        // Instantiate and draw our chart, passing in some options.
+        var ride_chart = new google.charts.Bar(document.getElementById("ride_chart_div"));
+        //chart.draw(data, google.charts.Column.convertOptions(options));style="width: 90%; height: 80%; margin: 10px"
+        ride_chart.draw(data, options);
+      }
+    </script>
 
-    d3.select("#piechart svg")
-        .datum(piedata)
-        .transition().duration(350)
-        .call(pchart);
+    <script type="text/javascript">
+      function dayOfWeekAsString(dayIndex) {
+        return ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][dayIndex];
+      };
 
-  return pchart;
-});
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
 
-var data = [{
-            key: "RIDES",
-            values: [
-            {% for ride in monthly_rides %}
-          {
-            "label" : '{{ ride[0] | datetimefilter }}',
-            "value" : {{ ride[1] }}
-          },
+        var data = google.visualization.arrayToDataTable([
+          ['Day', 'Commutes per Day'],
+          {% for day in day_count %}
+            [
+            '{{ day[0] | dayfilter }}', {{ day[1] }}
+            ],
           {% endfor %}
-        ]}];
-nv.addGraph(function() {
-  var chart = nv.models.discreteBarChart()
-    .x(function(d) { return d.label })
-    .y(function(d) { return d.value })
-    .showXAxis(false)
-    .tooltips(true)
+        ]);
 
+        var options = {
+          title: 'My Daily Activities'
+        };
 
-  d3.select('#chart svg')
-    .datum(data)
-    .transition().duration(500)
-    .call(chart);
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
-
-  return chart;
-});
-
-
-</script>
-
+        chart.draw(data, options);
+      }
+    </script>
 
 
   <div class="container">
     <h2>Commuting overview for {{firstname}} {{lastname}}</h2>
       <div class="row">
             <div class="col-md-8">
-                <div id="chart">
-                    <svg></svg>
-                </div>
+                <div id="ride_chart_div" ></div>
             <div class="row">
               <div class="col-md-6">
                 <div class="alert alert-info">
@@ -144,9 +120,7 @@ nv.addGraph(function() {
         </div>
   </div>
 <div class="col-md-4">
-              <div id="piechart">
-                <svg></svg>
-            </div>
+  <div id="piechart" style="width: 900px; height: 500px;"></div>
 </div>
 
 
