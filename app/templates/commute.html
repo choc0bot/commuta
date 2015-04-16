@@ -76,7 +76,9 @@
         ]);
 
         var options = {
-          title: 'My Daily Activities'
+          title: 'Commutes by day',
+          //colors: ['#DFF0D8', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
+          colors: ['#7BC66B', '#52B552', '#299C39', '#218429', '#186321', '#184A18', '#103910']
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -122,6 +124,89 @@
 <div class="col-md-4">
   <div id="piechart" style="width: 900px; height: 500px;"></div>
 </div>
+
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<div id="chartRangeFilter_dashboard_div" style="border: 1px solid #ccc">
+  <table class="columns">
+    <tr>
+      <td>
+        <div id="chartRangeFilter_chart_div" style="width: 915px; height: 300px;"></div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div id="chartRangeFilter_control_div" style="width: 915px; height: 50px;"></div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<script type="text/javascript">
+  google.load('visualization', '1.0', {'packages':['corechart', 'table', 'gauge', 'controls']});
+  google.setOnLoadCallback(drawChartRangeFilter);
+
+  function drawChartRangeFilter() {
+
+    var dashboard = new google.visualization.Dashboard(
+        document.getElementById('chartRangeFilter_dashboard_div'));
+
+    var control = new google.visualization.ControlWrapper({
+      'controlType': 'ChartRangeFilter',
+      'containerId': 'chartRangeFilter_control_div',
+      'options': {
+        // Filter by the date axis.
+        'filterColumnIndex': 0,
+        'ui': {
+          'chartType': 'LineChart',
+          'chartOptions': {
+            'chartArea': {'width': '90%'},
+            'hAxis': {'baselineColor': 'none'}
+          },
+          // Display a single series that shows the closing value of the stock.
+          // Thus, this view has two columns: the date (axis) and the stock value (line series).
+          'chartView': {
+            'columns': [0, 1]
+          },
+          // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
+          'minRangeSize': 86400000
+        }
+      },
+      // Initial range: 2012-02-09 to 2012-03-20.
+      'state': {'range': {'start': new Date(2015, 1, 9), 'end': new Date(2015, 4, 2)}}
+    });
+
+    var chart = new google.visualization.ChartWrapper({
+      'chartType': 'ColumnChart',
+      'containerId': 'chartRangeFilter_chart_div',
+      'options': {
+        // Use the same chart area width as the control for axis alignment.
+        'chartArea': {'height': '80%', 'width': '90%'},
+        'hAxis': {'slantedText': false},
+        'vAxis': {'viewWindow': {'min': 0, 'max': 2000}},
+        'legend': {'position': 'none'}
+      },
+      // Convert the first column from 'date' to 'string'.
+
+    });
+
+
+    var data = new google.visualization.DataTable();
+          data.addColumn('date', 'Date');
+          data.addColumn('number', 'Duration');
+          data.addRows([
+          {% for ride in monthly_rides %}
+          [{{ ride[0] | datetimefilter }}, {{ ride[1] }}],
+          {% endfor %}
+        ]);
+
+    dashboard.bind(control, chart);
+    dashboard.draw(data);
+  }
+</script>
+
 
 
 <a href='commute_details'>details</a>
