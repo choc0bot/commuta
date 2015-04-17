@@ -24,6 +24,25 @@ def dayfilter(value):
     """convert a datetime to a different format."""
     return calendar.day_name[value]
 
+@app.template_filter()
+def jsondatetimefilter(obj):
+    """Default JSON serializer."""
+    import calendar, datetime
+
+    if isinstance(obj, datetime.datetime):
+        if obj.utcoffset() is not None:
+            obj = obj - obj.utcoffset()
+    millis = int(
+        calendar.timegm(obj.timetuple()) * 1000 +
+        obj.microsecond / 1000
+    )
+    return millis
+"""
+@app.template_filter()
+def jsondatetimefilter(value):
+    return json.dumps(value)
+"""
+
 @app.route('/')
 @app.route('/index')
 def index():
