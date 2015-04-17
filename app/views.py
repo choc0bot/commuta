@@ -1,5 +1,6 @@
-from app import app, db
+from app import app, db, lm
 from flask import render_template, flash, session, url_for, redirect, request, g
+from flask.ext.login import login_user, logout_user, current_user, login_required
 from stravalib.client import Client, unithelper
 import config as cfg
 import datetime
@@ -48,13 +49,22 @@ def jsondatetimefilter(value):
 def index():
     return render_template('index.html', title='Home')
 
+@lm.user_loader
+def load_user(TOKEN):
+    return commutra.query.get(TOKEN)
 
 @app.route('/login')
 def strava_auth():
     client = Client()
     authorize_url = client.authorization_url(client_id=3982, redirect_uri='http://127.0.0.1:5000/authorized')
-    #return redirect(authorize_url)
-    return render_template('login.html', url=authorize_url)
+    return redirect(authorize_url)
+    #return render_template('login.html', url=authorize_url)
+
+@app.route('/logout')
+#@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/authorized',  methods = ['GET', 'POST'])
 def authorized():
@@ -101,6 +111,11 @@ def commute():
     global TOKEN
     if TOKEN == "":
         return redirect('/login')
+    if commutra.query.get(TOKEN) == False:
+        user = commutra(token=TOKEN)
+        db.session.add(user)
+        db.session.commit()
+        return redirect('/login')
     else:
         client = Client(TOKEN)
         athlete = client.get_athlete()
@@ -113,6 +128,10 @@ def commute():
         dow_rides = []
         commute_count = 0
         commute_distance = 0.0
+        day_count_list = []
+        commute_saving = 0
+        commute_goal = 0
+        commute_goal_percent = 0
         for act in activities:
             if flag == True:
                 if act.commute == True:
@@ -122,20 +141,21 @@ def commute():
                     if check_monthly(act.start_date_local, local_time):
                         monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
             else:
-                if settings.commute_string.lower() in act.name.lower():
-                    commute_count += 1
-                    commute_distance += float(unithelper.kilometers(act.distance))
-                    ride_date = act.start_date_local
-                    monthly_savings.append(ride_date.month)
-                    #if check_monthly(act.start_date_local, local_time):
-                    monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
-                    dow_rides.append(int(ride_date.weekday()))
-        day_count_list  = list(Counter(dow_rides).items())
-        #day_count_= list(day_count_l).item()
-        commute_saving = settings.goal_savings * commute_count
-        commute_goal = settings.goal_value - commute_saving
-        commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
-        #monthly_rides_json = json.dumps(monthly_rides)
+                if settings.commute_string != None:
+                    if settings.commute_string.lower() in act.name.lower():
+                        commute_count += 1
+                        commute_distance += float(unithelper.kilometers(act.distance))
+                        ride_date = act.start_date_local
+                        monthly_savings.append(ride_date.month)
+                        #if check_monthly(act.start_date_local, local_time):
+                        monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+                        dow_rides.append(int(ride_date.weekday()))
+                    day_count_list  = list(Counter(dow_rides).items())
+                    #day_count_= list(day_count_l).item()
+                    commute_saving = settings.goal_savings * commute_count
+                    commute_goal = settings.goal_value - commute_saving
+                    commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
+                    #monthly_rides_json = json.dumps(monthly_rides)
 
     return render_template('commute.html', total_distance = round(commute_distance,2), day_count = day_count_list, monthly_savings=monthly_savings, monthly_rides = monthly_rides, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
 
