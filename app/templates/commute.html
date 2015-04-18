@@ -2,7 +2,12 @@
 {% block content %}
 
 <style>
-      #g1 {
+      #g1, {
+        width:400px; height:320px;
+        display: inline-block;
+        margin: 1em;
+      }
+      #g2 {
         width:400px; height:320px;
         display: inline-block;
         margin: 1em;
@@ -10,9 +15,10 @@
 </style>
 
 <script src="static/js/raphael.2.1.0.min.js"></script>
-    <script src="static/js/justgage.1.0.1.min.js"></script>
+    <script src="static/js/justgage.js"></script>
 <script>
       var g1;
+      var g2;
       
       window.onload = function(){
         var g1 = new JustGage({
@@ -20,8 +26,53 @@
           value: {{ percent_complete }}, 
           min: 0,
           max: 100,
-          title: "Goal Progress",
-          label: "% Complete"
+          title: "{{ goal_title }}",
+          label: "% Complete",
+          levelColorsGradient : true,
+          customSectors: [{
+            color : "#ff0000",
+            lo : 0,
+            hi : 10
+          },{
+            color : "#FFCC00",
+            lo : 10,
+            hi : 50
+          }, {
+            color : "#0000ff",
+            lo : 50,
+            hi : 75
+          }, {
+            color : "#00ff00",
+            lo : 80,
+            hi : 100
+          }]
+        });
+
+        var g2 = new JustGage({
+          id: "g2", 
+          value: {{total_distance}} , 
+          min: 0,
+          max: 40075,
+          title: "Round the world",
+          label: "kms",
+          customSectors: [{
+            color : "#ff0000",
+            lo : 0,
+            hi : 10019
+          },{
+            color : "#FFCC00",
+            lo : 10019,
+            hi : 20038
+          }, {
+            color : "#0000ff",
+            lo : 20038,
+            hi : 30056
+          }, {
+            color : "#00ff00",
+            lo : 30056,
+            hi : 40075
+          }],
+          donut: true
         });
       };
 </script>
@@ -172,16 +223,18 @@
                   <h1><span>${{goal}} remaining</span></h1>
                 </div> 
               </div>
+              <div class="col-md-4">
+  <div id="piechart" style="width: 900px; height: 500px;"></div>
+</div>
+
             </div>
           </div>
         <div class="col-md-4">
             <div id="g1" ></div>
+            <div id="g2" ></div>
 
         </div>
   </div>
-<div class="col-md-4">
-  <div id="piechart" style="width: 900px; height: 500px;"></div>
-</div>
 
 
 <div id="chartRangeFilter_dashboard_div" style="border: 1px solid #ccc">

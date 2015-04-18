@@ -63,6 +63,7 @@ def strava_auth():
 @app.route('/logout')
 #@login_required
 def logout():
+    TOKEN=""
     logout_user()
     return redirect(url_for('index'))
 
@@ -123,6 +124,7 @@ def commute():
         settings = commutra.query.filter_by(token=TOKEN).first()
         flag = settings.commute_tag
         local_time = datetime.date.today()
+        equator_length = 40075 
         monthly_rides = []
         monthly_savings = []
         dow_rides = []
@@ -156,8 +158,10 @@ def commute():
                     commute_goal = settings.goal_value - commute_saving
                     commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
                     #monthly_rides_json = json.dumps(monthly_rides)
+                    commute_goal_title = settings.goal_name
+                    round_the_world = equator_length / commute_distance
 
-    return render_template('commute.html', total_distance = round(commute_distance,2), day_count = day_count_list, monthly_savings=monthly_savings, monthly_rides = monthly_rides, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent)
+    return render_template('commute.html', total_distance = round(commute_distance,2), day_count = day_count_list, monthly_savings=monthly_savings, monthly_rides = monthly_rides, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent, goal_title = commute_goal_title, round_the_world=round_the_world)
 
 @app.route('/commute_details')
 def commute_details():
