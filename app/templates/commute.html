@@ -2,13 +2,13 @@
 {% block content %}
 
 <style>
-      #g1, {
-        width:400px; height:320px;
+      #g1 {
+        width:360px; height:240px;
         display: inline-block;
         margin: 1em;
       }
       #g2 {
-        width:400px; height:320px;
+        width:460px; height:440px;
         display: inline-block;
         margin: 1em;
       }
@@ -28,7 +28,6 @@
           max: 100,
           title: "{{ goal_title }}",
           label: "% Complete",
-          levelColorsGradient : true,
           customSectors: [{
             color : "#ff0000",
             lo : 0,
@@ -45,7 +44,7 @@
             color : "#00ff00",
             lo : 80,
             hi : 100
-          }]
+          }],
         });
 
         var g2 = new JustGage({
@@ -172,9 +171,9 @@
       'containerId': 'chartRangeFilter_chart_div',
       'options': {
         // Use the same chart area width as the control for axis alignment.
-        'chartArea': {'height': '80%', 'width': '90%'},
+        //'chartArea': {'height': '80%', 'width': '90%'},
         'hAxis': {'slantedText': false},
-        'vAxis': {'viewWindow': {'min': 0, 'max': 2000}},
+        //'vAxis': {'viewWindow': {'min': 0, 'max': 60}},
         'legend': {'position': 'none'}
       },
       // Convert the first column from 'date' to 'string'.
@@ -187,7 +186,7 @@
           ridedata.addColumn('number', 'Duration');
           ridedata.addRows([
           {% for ride in monthly_rides %}
-          [{{ ride[0] | jsondatetimefilter }}, {{ ride[1] }}],
+          [ new Date({{ ride[0] | datefilter  }}), {{ ride[1] }}],
           {% endfor %}
         ]);
 
@@ -199,42 +198,39 @@
 
   <div class="container">
     <h2>Commuting overview for {{firstname}} {{lastname}}</h2>
-      <div class="row">
-            <div class="col-md-8">
+    <div class="row">
+        <div class="col-md-8">
                 <div id="ride_chart_div" ></div>
-            <div class="row">
-              <div class="col-md-6">
+        </div>
+        <div class="col-md-4" style>
+                <div id="g1"></div>
+    </div>
+    <div class="row">
+            <div class="col-md-6">
                 <div class="alert alert-info">
                   <h1><span>{{ total_commutes }} commutes</span></h1>
                 </div>
-              </div>
-            <div class="col-md-6">
                 <div class="alert alert-success">
                   <h1><span>${{total_savings}} saved</span></h1>
                 </div> 
-              </div>
-              <div class="col-md-6">
+            </div>
+            <div class="col-md-6">
                 <div class="alert alert-success">
                   <h1><span>{{total_distance}} kms</span></h1>
-                </div> 
-              </div>
-              <div class="col-md-6">
+                </div>
                 <div class="alert alert-info">
                   <h1><span>${{goal}} remaining</span></h1>
                 </div> 
-              </div>
-              <div class="col-md-4">
-  <div id="piechart" style="width: 900px; height: 500px;"></div>
-</div>
-
             </div>
-          </div>
-        <div class="col-md-4">
-            <div id="g1" ></div>
-            <div id="g2" ></div>
-
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div id="piechart" style="width: 900px; height: 500px;"></div>
         </div>
-  </div>
+        <div class="col-md-4" style>
+            <div id="g2"></div>
+        </div>
+
 
 
 <div id="chartRangeFilter_dashboard_div" style="border: 1px solid #ccc">
@@ -251,7 +247,7 @@
     </tr>
   </table>
 </div>
-
+</div>
 
 
 <a href='commute_details'>details</a>
