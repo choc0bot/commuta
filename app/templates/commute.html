@@ -54,6 +54,7 @@
           max: 40075,
           title: "Round the world",
           label: "kms",
+          gaugeWidthScale : 0.75,
           customSectors: [{
             color : "#ff0000",
             lo : 0,
@@ -124,6 +125,12 @@
 
         var options = {
           title: 'Commutes by day',
+          titleTextStyle: {
+                    color: '#999999', 
+                    fontName: 'Arial', 
+                    fontSize: 42
+                    },
+          fontSize: 24,
           //colors: ['#DFF0D8', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
           colors: ['#7BC66B', '#52B552', '#299C39', '#218429', '#186321', '#184A18', '#103910']
         };
@@ -134,65 +141,7 @@
       }
 
 
-    google.setOnLoadCallback(drawChartRangeFilter);
-
-  function drawChartRangeFilter() {
-
-    var dashboard = new google.visualization.Dashboard(
-        document.getElementById('chartRangeFilter_dashboard_div'));
-
-    var control = new google.visualization.ControlWrapper({
-      'controlType': 'ChartRangeFilter',
-      'containerId': 'chartRangeFilter_control_div',
-      'options': {
-        // Filter by the date axis.
-        'filterColumnIndex': 0,
-        'ui': {
-          'chartType': 'LineChart',
-          'chartOptions': {
-            'chartArea': {'width': '90%'},
-            'hAxis': {'baselineColor': 'none'}
-          },
-          // Display a single series that shows the closing value of the stock.
-          // Thus, this view has two columns: the date (axis) and the stock value (line series).
-          'chartView': {
-            'columns': [0, 1]
-          },
-          // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
-          'minRangeSize': 86400000
-        }
-      },
-      // Initial range: 2012-02-09 to 2012-03-20.
-      'state': {'range': {'start': new Date(2015, 1, 9), 'end': new Date(2015, 4, 2)}}
-    });
-
-    var chart = new google.visualization.ChartWrapper({
-      'chartType': 'ColumnChart',
-      'containerId': 'chartRangeFilter_chart_div',
-      'options': {
-        // Use the same chart area width as the control for axis alignment.
-        //'chartArea': {'height': '80%', 'width': '90%'},
-        'hAxis': {'slantedText': false},
-        //'vAxis': {'viewWindow': {'min': 0, 'max': 60}},
-        'legend': {'position': 'none'}
-      },
-      // Convert the first column from 'date' to 'string'.
-
-    });
-
-
-    var ridedata = new google.visualization.DataTable();
-          ridedata.addColumn('date', 'Date');
-          ridedata.addColumn('number', 'Duration');
-          ridedata.addRows([
-          {% for ride in monthly_rides %}
-          [ new Date({{ ride[0] | datefilter  }}), {{ ride[1] }}],
-          {% endfor %}
-        ]);
-
-    dashboard.bind(control, chart);
-    dashboard.draw(ridedata);
-  }
+ 
     </script>
 
 
@@ -212,7 +161,7 @@
                 </div>
                 <div class="alert alert-success">
                   <h1><span>${{total_savings}} saved</span></h1>
-                </div> 
+                </div>
             </div>
             <div class="col-md-6">
                 <div class="alert alert-success">
@@ -220,33 +169,18 @@
                 </div>
                 <div class="alert alert-info">
                   <h1><span>${{goal}} remaining</span></h1>
-                </div> 
+                </div>
             </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
-            <div id="piechart" style="width: 900px; height: 500px;"></div>
-        </div>
-        <div class="col-md-4" style>
+        <div class="col-md-5">
             <div id="g2"></div>
         </div>
+        <div class="col-md-5" style>
+            <div id="piechart" style="width: 900px; height: 500px;"></div>
+        </div>
 
 
-
-<div id="chartRangeFilter_dashboard_div" style="border: 1px solid #ccc">
-  <table class="columns">
-    <tr>
-      <td>
-        <div id="chartRangeFilter_chart_div" style="width: 915px; height: 300px;"></div>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <div id="chartRangeFilter_control_div" style="width: 915px; height: 50px;"></div>
-      </td>
-    </tr>
-  </table>
-</div>
 </div>
 
 
