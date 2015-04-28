@@ -26,27 +26,15 @@ def dayfilter(value):
     return calendar.day_name[value]
 
 @app.template_filter()
-def datefilter(value, time_format='%Y, (%m-1), %d'):
+def monthfilter(value):
+    """convert a datetime to a different format."""
+    return calendar.month_name[value]
+
+@app.template_filter()
+def datefilter(value, time_format='%m'):
     """convert a datetime to a different format."""
     return value.strftime(time_format)
 
-@app.template_filter()
-def jsondatetimefilter(obj):
-    """Default JSON serializer."""
-
-    if isinstance(obj, datetime.datetime):
-        if obj.utcoffset() is not None:
-            obj = obj - obj.utcoffset()
-    millis = int(
-        calendar.timegm(obj.timetuple()) * 1000 +
-        obj.microsecond / 1000
-    )
-    return millis
-"""
-@app.template_filter()
-def jsondatetimefilter(value):
-    return json.dumps(value)
-"""
 
 @app.route('/')
 @app.route('/index')
@@ -128,7 +116,7 @@ def commute():
         settings = commutra.query.filter_by(token=TOKEN).first()
         flag = settings.commute_tag
         local_time = datetime.date.today()
-        equator_length = 40075 
+        equator_length = 40075
         monthly_rides = []
         monthly_savings = []
         dow_rides = []
@@ -157,6 +145,7 @@ def commute():
                         monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
                         dow_rides.append(int(ride_date.weekday()))
                     day_count_list  = list(Counter(dow_rides).items())
+                    month_count_list =  list(Counter(monthly_savings).items())
                     #day_count_= list(day_count_l).item()
                     commute_saving = settings.goal_savings * commute_count
                     commute_goal = settings.goal_value - commute_saving
@@ -165,7 +154,7 @@ def commute():
                     commute_goal_title = settings.goal_name
                     round_the_world = equator_length / commute_distance
 
-    return render_template('commute.html', total_distance = round(commute_distance,2), day_count = day_count_list, monthly_savings=monthly_savings, monthly_rides = monthly_rides, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent, goal_title = commute_goal_title, round_the_world=round_the_world)
+    return render_template('commute.html', total_distance = round(commute_distance,2), day_count = day_count_list, monthly_savings = month_count_list, monthly_rides = monthly_rides, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent, goal_title = commute_goal_title, round_the_world=round_the_world)
 
 @app.route('/commute_details')
 def commute_details():

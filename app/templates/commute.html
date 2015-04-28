@@ -85,21 +85,23 @@
       google.setOnLoadCallback(drawVisualization);
       function drawVisualization() {
         var thedata = google.visualization.arrayToDataTable([
-          ['', 'Time'],
-          {% for ride in monthly_rides %}
+          ['', 'Savings', 'Carbon'],
+          {% for ride in monthly_savings %}
           [
-            '{{ ride[0] | datetimefilter }}', {{ ride[1] }}
+            '{{ ride[0] | monthfilter }}', {{ ride[1] * 3.76 }}, {{ (ride[1] * 10 * 0.221) }},
           ],
           {% endfor %}
         ]);
         // Set chart options
             var options = {
             chart: {
-              title: 'Past month of commutes',
+              title: 'Savings by month',
               },
-              legend: { position: 'none' },
+
               vAxis: { textPosition: 'none' },
               hAxis: { textPosition: 'none' },
+              seriesType: "bars",
+              series: {1: {type: "line"}}
             };
         // Instantiate and draw our chart, passing in some options.
         var ride_chart = new google.charts.Bar(document.getElementById("ride_chart_div"));
