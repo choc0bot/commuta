@@ -146,6 +146,7 @@ def commute():
                         dow_rides.append(int(ride_date.weekday()))
                     day_count_list  = list(Counter(dow_rides).items())
                     month_count_list =  list(Counter(monthly_savings).items())
+                    total_carbon = commute_count * 223.42 #settings.carbon_value
                     #day_count_= list(day_count_l).item()
                     commute_saving = settings.goal_savings * commute_count
                     commute_goal = settings.goal_value - commute_saving
@@ -154,7 +155,20 @@ def commute():
                     commute_goal_title = settings.goal_name
                     round_the_world = equator_length / commute_distance
 
-    return render_template('commute.html', total_distance = round(commute_distance,2), day_count = day_count_list, monthly_savings = month_count_list, monthly_rides = monthly_rides, firstname=athlete.firstname, lastname=athlete.lastname, athlete=athlete, total_commutes=commute_count, total_savings=commute_saving, goal=commute_goal, percent_complete=commute_goal_percent, goal_title = commute_goal_title, round_the_world=round_the_world)
+    return render_template('commute.html',  total_distance = round(commute_distance,2),
+                                            total_carbon = total_carbon,
+                                            day_count = day_count_list,
+                                            monthly_savings = month_count_list,
+                                            monthly_rides = monthly_rides,
+                                            firstname = athlete.firstname,
+                                            lastname = athlete.lastname,
+                                            athlete = athlete,
+                                            total_commutes = commute_count,
+                                            total_savings = commute_saving,
+                                            goal = commute_goal,
+                                            percent_complete = commute_goal_percent,
+                                            goal_title = commute_goal_title,
+                                            round_the_world = round_the_world)
 
 @app.route('/commute_details')
 def commute_details():
