@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, BooleanField, FloatField
+from wtforms import StringField, BooleanField, FloatField, DecimalField
 from wtforms.validators import DataRequired, NumberRange
 
 class LoginForm(Form):
@@ -12,3 +12,4 @@ class SettingsForm(Form):
     goal_string = StringField('goal_string')
     goal_number = FloatField('goal_number', validators=[NumberRange(1,999999)])
     savings = FloatField('savings', validators=[NumberRange(1,999)])
+    carbon_number = FloatField('carbon_number', validators=[NumberRange(1,999)])

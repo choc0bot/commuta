@@ -54,6 +54,17 @@
             </div>
         </div>
     </div>
+        <div class="row">
+        <div class="col-lg-5">
+            <div class="form-group">
+              <label>Carbon Savings per trip (in grams):</label>
+              {{ form.carbon_number(class="form-control", size=20) }}
+              {% for error in form.carbon_number.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+              {% endfor %}
+           </div>
+        </div>
+    </div>
       <p><input type="submit" class="btn btn-success" value="Save"></p>
   </form>
  </div>

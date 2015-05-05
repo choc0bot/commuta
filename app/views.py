@@ -146,7 +146,8 @@ def commute():
                         dow_rides.append(int(ride_date.weekday()))
                     day_count_list  = list(Counter(dow_rides).items())
                     month_count_list =  list(Counter(monthly_savings).items())
-                    total_carbon = commute_count * 223.42 #settings.carbon_value
+                    total_carbon = commute_count * settings.carbon_number
+                    total_carbon_trees = round(total_carbon / 22100, 2)
                     #day_count_= list(day_count_l).item()
                     commute_saving = settings.goal_savings * commute_count
                     commute_goal = settings.goal_value - commute_saving
@@ -168,7 +169,8 @@ def commute():
                                             goal = commute_goal,
                                             percent_complete = commute_goal_percent,
                                             goal_title = commute_goal_title,
-                                            round_the_world = round_the_world)
+                                            round_the_world = round_the_world,
+                                            total_carbon_trees = total_carbon_trees)
 
 @app.route('/commute_details')
 def commute_details():
@@ -199,6 +201,7 @@ def settings():
         commute.goal_name = form.goal_string.data
         commute.goal_value = form.goal_number.data
         commute.goal_savings = form.savings.data
+        commute.carbon_number = form.carbon_number.data
         #user = commutra(token=TOKEN,commute_tag=commute.commute_tag,commute_string=commute.commute_string,goal_name=commute.goal_name,goal_value=commute.goal_value,goal_savings=commute.goal_savings)
         user = commutra(token=TOKEN)
         if user.is_authenticated():
@@ -208,6 +211,7 @@ def settings():
             user.goal_name=commute.goal_name
             user.goal_value=commute.goal_value
             user.goal_savings=commute.goal_savings
+            user.carbon_number=commute.carbon_number
             db.session.commit()
             flash('Your changes have been saved.')
             flash('Settings saved')
@@ -215,5 +219,12 @@ def settings():
     user = commutra(token=TOKEN)
     if user.is_authenticated():
         user = commutra.query.filter_by(token=TOKEN).first()
-        return render_template('settings.html',title='Settings',user=user, form=SettingsForm(commute_tag=user.commute_tag, commute_string=user.commute_string, goal_string=user.goal_name, goal_number=user.goal_value, savings=user.goal_savings))
+        return render_template( 'settings.html',
+                                title='Settings',user=user,
+                                form=SettingsForm(  commute_tag=user.commute_tag,
+                                                    commute_string=user.commute_string,
+                                                    goal_string=user.goal_name,
+                                                    goal_number=user.goal_value,
+                                                    savings=user.goal_savings,
+                                                    carbon_number=user.carbon_number))
     return render_template('settings.html',title='Settings',form=form)
