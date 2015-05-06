@@ -146,8 +146,8 @@ def commute():
                         dow_rides.append(int(ride_date.weekday()))
                     day_count_list  = list(Counter(dow_rides).items())
                     month_count_list =  list(Counter(monthly_savings).items())
-                    total_carbon = commute_count * settings.carbon_number
-                    total_carbon_trees = round(total_carbon / 22100, 2)
+                    total_carbon = round((commute_count * settings.carbon_number) / 1000,2)
+                    total_carbon_trees = round((commute_count * settings.carbon_number) / 22100, 2)
                     #day_count_= list(day_count_l).item()
                     commute_saving = settings.goal_savings * commute_count
                     commute_goal = settings.goal_value - commute_saving
