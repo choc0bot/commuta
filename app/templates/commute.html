@@ -5,7 +5,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
 
-  <div class="container">
+<div>
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">Commuting overview for {{firstname}} {{lastname}}</h1>
@@ -14,38 +14,61 @@
      </div>
 
     <div class="row">
-        <div class="col-md-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                          <i class="fa fa-road fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{ total_commutes }}</div>
-                            <div>Commutes</div>
-                         </div>
-                    </div>
-                </div>
-                    <a href="#">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Details</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-green">
+        <div class="col-md-9">
+            <div class="col-md-4">
+                <div class="panel panel-primary">
                     <div class="panel-heading">
                         <div class="row">
                             <div class="col-xs-3">
-                               <i class="fa fa-money fa-5x"></i>
+                              <i class="fa fa-road fa-3x"></i>
                             </div>
                             <div class="col-xs-9 text-right">
-                                <div class="huge">${{total_savings}}</div>
-                                <div>saved!</div>
+                                <div class="huge">{{ total_commutes }}</div>
+                                <div>Commutes</div>
+                             </div>
+                        </div>
+                    </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                   <i class="fa fa-money fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">${{total_savings}}</div>
+                                    <div>saved!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-red">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-check-square fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">${{goal}}</div>
+                                <div>remaining</div>
                             </div>
                         </div>
                     </div>
@@ -56,112 +79,100 @@
                             <div class="clearfix"></div>
                         </div>
                     </a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-red">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-check-square fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">${{goal}}</div>
-                            <div>remaining</div>
-                        </div>
-                    </div>
                 </div>
-                <a href="#">
-                    <div class="panel-footer">
-                        <span class="pull-left">View Details</span>
-                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
             </div>
+
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Rides by Month
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div id="myfirstchart"></div>
+                    </div>
+                        <!-- /.panel-body -->
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-yellow">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-forward fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{total_distance}}</div>
+                                <div>Total distance</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#">
+                        <div class="panel-footer">
+                            <span class="pull-left">View Details</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right "></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                              <i class="fa fa-recycle fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ total_carbon }}</div>
+                                <div>kilograms of carbon</div>
+                             </div>
+                        </div>
+                    </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-green">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                              <i class="fa fa-tree fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ total_carbon_trees }}</div>
+                                <div>Trees</div>
+                             </div>
+                        </div>
+                    </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                </div>
+            </div>
+
         </div>
+    <div class="col-md-3">
+
+                <div id="piegoal" ></div>
+
+                <div id="weeklypie" ></div>
+
     </div>
-        <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-bar-chart-o fa-fw"></i> Rides by Month
-                </div>
-                <!-- /.panel-heading -->
-                <div class="panel-body">
-                    <div id="myfirstchart"></div>
-                </div>
-                    <!-- /.panel-body -->
-            </div>
-        </div>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="panel panel-yellow">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-forward fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{total_distance}}</div>
-                            <div>Total distance</div>
-                        </div>
-                    </div>
-                </div>
-                <a href="#">
-                    <div class="panel-footer">
-                        <span class="pull-left">View Details</span>
-                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                        <div class="clearfix"></div>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                          <i class="fa fa-recycle fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{ total_carbon }}</div>
-                            <div>kilograms of carbon</div>
-                         </div>
-                    </div>
-                </div>
-                    <a href="#">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Details</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-green">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                          <i class="fa fa-tree fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{ total_carbon_trees }}</div>
-                            <div>Trees</div>
-                         </div>
-                    </div>
-                </div>
-                    <a href="#">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Details</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-            </div>
-        </div>
 </div>
+
+
 
 <div class="row">
     <div class="col-md-4">
@@ -259,7 +270,7 @@ new Morris.Donut({
 
 new Morris.Donut({
   element: 'piegoal',
-  data: [{label: 'completed', value: {{ percent_complete }} },
+  data: [{label: 'Goal progress', value: {{ percent_complete }} },
          {label: 'remaining', value: {{100 - percent_complete}} },
         ],
   colors: ['#7E1518', '#103910']
