@@ -1,15 +1,13 @@
 from app import app, db, lm
-from flask import render_template, flash, session, url_for, redirect, request, g
-from flask.ext.login import login_user, logout_user, current_user, login_required
+from flask import render_template, flash, url_for, redirect, request
+from flask.ext.login import logout_user
 from stravalib.client import Client, unithelper
 import config as cfg
 import datetime
 import calendar
 from collections import Counter
 from .models import commutra
-from .forms import LoginForm
 from .forms import SettingsForm
-import json
 
 TOKEN = ""
 MY_STRAVA_CLIENT_ID = cfg.MSCID
@@ -55,11 +53,12 @@ def strava_auth():
 @app.route('/logout')
 #@login_required
 def logout():
-    TOKEN=""
+    global TOKEN
+    TOKEN = ""
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/authorized',  methods = ['GET', 'POST'])
+@app.route('/authorized', methods = ['GET', 'POST'])
 def authorized():
     global TOKEN
     # Extract the code from your webapp response
@@ -174,21 +173,23 @@ def commute():
 
 @app.route('/commute_details')
 def commute_details():
-  global TOKEN
-  if TOKEN == "":
-    return redirect('/login')
-  else:
-    client = Client(TOKEN)
-    activities = client.get_activities()
-    distance_count = 0
-    commute_count = 0
-    elapsed_count = 0
+    global TOKEN
+    if TOKEN == "":
+        return redirect('/login')
+    else:
+        client = Client(TOKEN)
+        activities = client.get_activities()
+        distance_count = 0
+        commute_count = 0
+        elapsed_count = 0
     for act in activities:
-      if "commute" in act.name.lower():
-        commute_count += 1
-        distance_count += float(act.distance)/1000
-        elapsed_count += datetime.timedelta.total_seconds(act.elapsed_time)
-    return render_template('commute_details.html', total_commutes=commute_count, total_distance=round(distance_count,2),  total_elapsed_time=str(datetime.timedelta(seconds=elapsed_count)))
+        if "commute" in act.name.lower():
+            commute_count += 1
+            distance_count += float(act.distance)/1000
+            elapsed_count += datetime.timedelta.total_seconds(act.elapsed_time)
+    return render_template('commute_details.html',  total_commutes=commute_count,
+                                                    total_distance=round(distance_count,2),
+                                                    total_elapsed_time=str(datetime.timedelta(seconds=elapsed_count)))
 
 
 @app.route('/settings', methods=['GET', 'POST'])
