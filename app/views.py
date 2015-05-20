@@ -103,11 +103,11 @@ def commute():
     global TOKEN
     if TOKEN == "":
         return redirect('/login')
-    if commutra.query.get(TOKEN) == False:
+    if db.session.query(commutra).filter(commutra.token==TOKEN).count()==0:
         user = commutra(token=TOKEN)
         db.session.add(user)
         db.session.commit()
-        return redirect('/login')
+        return redirect('/settings')
     else:
         client = Client(TOKEN)
         athlete = client.get_athlete()
@@ -196,6 +196,8 @@ def commute_details():
 def settings():
     global TOKEN
     form = SettingsForm()
+    #FIX THIS
+    flash('Before we display your stats we need to setup your account')
     if form.validate_on_submit():
         commute.commute_tag = form.commute_tag.data
         commute.commute_string = form.commute_string.data
