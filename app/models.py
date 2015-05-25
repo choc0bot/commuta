@@ -9,6 +9,8 @@ class commutra(db.Model):
     goal_value = db.Column(db.Integer)
     goal_savings = db.Column(db.Integer)
     carbon_number = db.Column(db.Integer)
+    latitude = db.Column(db.Integer)
+    longitude = db.Column(db.Integer)
 
     def is_authenticated(self):
         return True

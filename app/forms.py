@@ -13,3 +13,5 @@ class SettingsForm(Form):
     goal_number = FloatField('goal_number', validators=[NumberRange(1,999999)])
     savings = FloatField('savings', validators=[NumberRange(1,999)])
     carbon_number = FloatField('carbon_number', validators=[NumberRange(1,999)])
+    latitude = FloatField('latitude')
+    longitude = FloatField('longitude')

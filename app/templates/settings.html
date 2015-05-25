@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+-->
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<link rel="stylesheet" type="text/css" href="../static/picker-gmaps/css/jquery-gmaps-latlon-picker.css"/>
+  <script src="../static/picker-gmaps/js/jquery-gmaps-latlon-picker.js"></script>
 <div class="container">
 <div class="panel panel-success">
   <div class="panel-heading">
@@ -54,7 +58,7 @@
             </div>
         </div>
     </div>
-        <div class="row">
+    <div class="row">
         <div class="col-lg-5">
             <div class="form-group">
               <label>Carbon Savings per trip (in grams):</label>
@@ -62,6 +66,22 @@
               {% for error in form.carbon_number.errors %}
                 <span style="color: red;">[{{ error }}]</span>
               {% endfor %}
+           </div>
+        </div>
+    </div>
+        <div class="row">
+        <div class="col-lg-5">
+            <div class="form-group">
+              <label>maps:</label>
+              <fieldset class="gllpLatlonPicker">
+                <input type="text" class="gllpSearchField">
+                <input type="button" class="gllpSearchButton" value="search">
+                <br/>
+                <div class="gllpMap">Google Maps</div>
+                lat/lon: {{ form.latitude(class="gllpLatitude form-control") }} / {{ form.longitude(class="gllpLongitude form-control") }}
+                <input type="button" class="gllpUpdateButton" value="update map">
+                <!-- lat/lon: <input type="text" class="gllpLatitude" value="20"/> / <input type="text" class="gllpLongitude" value="20"/> -->
+                </fieldset>
            </div>
         </div>
     </div>

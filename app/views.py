@@ -1,3 +1,4 @@
+from math import radians, cos, sin, asin, sqrt
 from app import app, db, lm
 from flask import render_template, flash, url_for, redirect, request
 from flask.ext.login import logout_user
@@ -98,6 +99,22 @@ def convert_timedelta(delta_to_convert):
     minutes = (seconds % 3600) // 60
     return minutes
 
+def haversine(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees)
+    """
+    # convert decimal degrees to radians 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    # haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    r = 6371 # Radius of earth in kilometers. Use 3956 for miles
+    return c * r
+
 @app.route('/commute')
 def commute():
     global TOKEN
@@ -125,17 +142,13 @@ def commute():
         commute_saving = 0
         commute_goal = 0
         commute_goal_percent = 0
-        for act in activities:
-            if flag == True:
-                if act.commute == True:
-                    commute_count += 1
-                    commute_distance += float(unithelper.kilometers(act.distance))
-                    ride_date = act.start_date_local
-                    if check_monthly(act.start_date_local, local_time):
-                        monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
-            else:
-                if settings.commute_string != None:
-                    if settings.commute_string.lower() in act.name.lower():
+
+        if settings.latitude != 0:
+            for act in activities:
+                if act.start_latlng != None:
+                    slatlng = act.start_latlng
+                    elatlng= act.end_latlng
+                    if haversine(settings.longitude, settings.latitude, slatlng[1], slatlng[0]) < 0.5 or haversine(settings.longitude, settings.latitude, elatlng[1], elatlng[0]) < 0.5:
                         commute_count += 1
                         commute_distance += float(unithelper.kilometers(act.distance))
                         ride_date = act.start_date_local
@@ -143,17 +156,36 @@ def commute():
                         #if check_monthly(act.start_date_local, local_time):
                         monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
                         dow_rides.append(int(ride_date.weekday()))
-                    day_count_list  = list(Counter(dow_rides).items())
-                    month_count_list =  list(Counter(monthly_savings).items())
-                    total_carbon = round((commute_count * settings.carbon_number) / 1000,2)
-                    total_carbon_trees = round((commute_count * settings.carbon_number) / 22100, 2)
-                    #day_count_= list(day_count_l).item()
-                    commute_saving = settings.goal_savings * commute_count
-                    commute_goal = settings.goal_value - commute_saving
-                    commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
-                    #monthly_rides_json = json.dumps(monthly_rides)
-                    commute_goal_title = settings.goal_name
-                    round_the_world = equator_length / commute_distance
+        else:
+            for act in activities:
+                if flag == True:
+                    if act.commute == True:
+                        commute_count += 1
+                        commute_distance += float(unithelper.kilometers(act.distance))
+                        ride_date = act.start_date_local
+                        if check_monthly(act.start_date_local, local_time):
+                            monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+                else:
+                    if settings.commute_string != None:
+                        if settings.commute_string.lower() in act.name.lower():
+                            commute_count += 1
+                            commute_distance += float(unithelper.kilometers(act.distance))
+                            ride_date = act.start_date_local
+                            monthly_savings.append(ride_date.month)
+                            #if check_monthly(act.start_date_local, local_time):
+                            monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+                            dow_rides.append(int(ride_date.weekday()))
+        day_count_list  = list(Counter(dow_rides).items())
+        month_count_list =  list(Counter(monthly_savings).items())
+        total_carbon = round((commute_count * settings.carbon_number) / 1000,2)
+        total_carbon_trees = round((commute_count * settings.carbon_number) / 22100, 2)
+        #day_count_= list(day_count_l).item()
+        commute_saving = settings.goal_savings * commute_count
+        commute_goal = settings.goal_value - commute_saving
+        commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
+        #monthly_rides_json = json.dumps(monthly_rides)
+        commute_goal_title = settings.goal_name
+        round_the_world = equator_length / commute_distance
 
     return render_template('commute.html',  total_distance = round(commute_distance,2),
                                             total_carbon = total_carbon,
@@ -205,16 +237,20 @@ def settings():
         commute.goal_value = form.goal_number.data
         commute.goal_savings = form.savings.data
         commute.carbon_number = form.carbon_number.data
+        commute.latitude = form.latitude.data
+        commute.longitude = form.longitude.data
         #user = commutra(token=TOKEN,commute_tag=commute.commute_tag,commute_string=commute.commute_string,goal_name=commute.goal_name,goal_value=commute.goal_value,goal_savings=commute.goal_savings)
         user = commutra(token=TOKEN)
         if user.is_authenticated():
             user = commutra.query.filter_by(token=TOKEN).first()
             user.commute_tag = commute.commute_tag
-            user.commute_string=commute.commute_string
-            user.goal_name=commute.goal_name
-            user.goal_value=commute.goal_value
-            user.goal_savings=commute.goal_savings
-            user.carbon_number=commute.carbon_number
+            user.commute_string = commute.commute_string
+            user.goal_name = commute.goal_name
+            user.goal_value = commute.goal_value
+            user.goal_savings = commute.goal_savings
+            user.carbon_number = commute.carbon_number
+            user.latitude = commute.latitude
+            user.longitude = commute.longitude
             db.session.commit()
             flash('Your changes have been saved.')
             flash('Settings saved')
@@ -229,5 +265,7 @@ def settings():
                                                     goal_string=user.goal_name,
                                                     goal_number=user.goal_value,
                                                     savings=user.goal_savings,
-                                                    carbon_number=user.carbon_number))
+                                                    carbon_number=user.carbon_number,
+                                                    latitude = user.latitude,
+                                                    longitude = user.longitude))
     return render_template('settings.html',title='Settings',form=form)
