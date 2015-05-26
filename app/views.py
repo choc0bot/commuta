@@ -143,12 +143,12 @@ def commute():
         commute_goal = 0
         commute_goal_percent = 0
 
-        if settings.latitude != 0:
+        if settings.latitude == 0:
             for act in activities:
                 if act.start_latlng != None:
                     slatlng = act.start_latlng
                     elatlng= act.end_latlng
-                    if haversine(settings.longitude, settings.latitude, slatlng[1], slatlng[0]) < 0.5 or haversine(settings.longitude, settings.latitude, elatlng[1], elatlng[0]) < 0.5:
+                    if haversine(settings.longitude, settings.latitude, slatlng[1], slatlng[0]) < 0.3 or haversine(settings.longitude, settings.latitude, elatlng[1], elatlng[0]) < 0.5:
                         commute_count += 1
                         commute_distance += float(unithelper.kilometers(act.distance))
                         ride_date = act.start_date_local
@@ -165,6 +165,8 @@ def commute():
                         ride_date = act.start_date_local
                         if check_monthly(act.start_date_local, local_time):
                             monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+                            monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+                            dow_rides.append(int(ride_date.weekday()))
                 else:
                     if settings.commute_string != None:
                         if settings.commute_string.lower() in act.name.lower():
