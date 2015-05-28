@@ -164,57 +164,16 @@
 
         </div>
     <div class="col-md-3">
-
-                <div id="piegoal" ></div>
-
-                <div id="weeklypie" ></div>
+        <h3>{{ goal_title }}</h3>
+        <div id="piegoal" ></div>
+        <h3>Favorite day to commute</h3>
+        <div id="weeklypie" ></div>
 
     </div>
 </div>
 
 
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Goal Progress
-            </div>
-            <div class="panel-body">
-                <div id="piegoal" ></div>
-                <a href="#" class="btn btn-default btn-block">View Details</a>
-            </div>
-            <!-- /.panel-body -->
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Rides by day
-            </div>
-            <div class="panel-body">
-                <div id="weeklypie" ></div>
-                <a href="#" class="btn btn-default btn-block">View Details</a>
-            </div>
-            <!-- /.panel-body -->
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Circumnavigate the World
-            </div>
-            <div class="panel-body">
-                <div id="roundtheworld"></div>
-            <a href="#" class="btn btn-default btn-block">View Details</a>
-            </div>
-            <!-- /.panel-body -->
-        </div>
-    </div>
-</div>
-
-
-<a href='commute_details'>details</a>
 </div>
 
 <script>
@@ -239,17 +198,7 @@ new Morris.Area({
 });
 
 </script>
-<script>
 
-new Morris.Donut({
-  element: 'roundtheworld',
-  data: [{label: 'travelled ', value: {{total_distance}} },
-         {label: 'remaining ', value: {{40075 - total_distance}} },
-        ],
-  colors: ['#7E1518', '#5AAC56']
-});
-
-</script>
 <script>
 
   function dayOfWeekAsString(dayIndex) {

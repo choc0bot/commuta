@@ -40,6 +40,14 @@ def datefilter(value, time_format='%m'):
 def index():
     return render_template('index.html', title='Home')
 
+@app.route('/about')
+def about():
+    return render_template('about.html', title='About')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html', title='Contact')
+
 @lm.user_loader
 def load_user(TOKEN):
     return commutra.query.get(TOKEN)

@@ -28,6 +28,18 @@
           </div>
         </div>
     </div>
+        <div class="row">
+        <div class="col-lg-5">
+            <div class="form-group">
+              <label>Move the marker, or double click on the map to set your commute destination (generally your workplace)</label>
+              <fieldset class="gllpLatlonPicker">
+                <div class="gllpMap">Google Maps</div>
+                <label>latitude:</label> {{ form.latitude(class="gllpLatitude form-control") }}
+                <label>longitude:</label> {{ form.longitude(class="gllpLongitude form-control") }}
+                </fieldset>
+           </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-5">
           <div class="form-group">
@@ -69,28 +81,7 @@
            </div>
         </div>
     </div>
-        <div class="row">
-        <div class="col-lg-5">
-            <div class="form-group">
-              <label>maps:</label>
-              <fieldset class="gllpLatlonPicker">
-                <!--
-                <input type="text" class="gllpSearchField">
-                <input type="button" class="gllpSearchButton" value="search">
-                -->
-                
-                <div class="gllpMap">Google Maps</div>
-                <label>latitude:</label> {{ form.latitude(class="gllpLatitude form-control") }} 
-                <label>longitude:</label> {{ form.longitude(class="gllpLongitude form-control") }}
-                <!--
-                <input type="button" class="gllpUpdateButton" value="update map">
-                -->
-                <!-- lat/lon: <input type="text" class="gllpLatitude" value="20"/> / <input type="text" class="gllpLongitude" value="20"/> -->
-                </fieldset>
-           </div>
-        </div>
-    </div>
-      <p><input type="submit" class="btn btn-success" value="Save"></p>
+    <p><input type="submit" class="btn btn-success" value="Save"></p>
   </form>
  </div>
 </div>
