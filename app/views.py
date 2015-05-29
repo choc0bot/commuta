@@ -123,6 +123,33 @@ def haversine(lon1, lat1, lon2, lat2):
     r = 6371 # Radius of earth in kilometers. Use 3956 for miles
     return c * r
 
+def process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides):
+    commute_count += 1
+    commute_distance += float(unithelper.kilometers(act.distance))
+    ride_date = act.start_date_local
+    monthly_savings.append(ride_date.month)
+    monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+    dow_rides.append(int(ride_date.weekday()))
+    return(commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides)
+
+def flag_check(flag, act):
+    if flag == True:
+        if act.commute == True:
+            return 1
+    return 0
+
+def string_check(string, act):
+    if string != None:
+        if string.lower() in act.name.lower():
+            return 1
+    return 0
+
+def gps_check(settings_longitude, settings_latitude, start_latlng, end_latlng,act):
+    if act.start_latlng != None:
+        if haversine(settings_longitude, settings_latitude, start_latlng[1], start_latlng[0]) < 0.5 or haversine(settings_longitude, settings_latitude, end_latlng[1], end_latlng[0]) < 0.5:
+            return 1
+    return 0
+
 @app.route('/commute')
 def commute():
     global TOKEN
@@ -138,8 +165,7 @@ def commute():
         athlete = client.get_athlete()
         activities = client.get_activities()
         settings = commutra.query.filter_by(token=TOKEN).first()
-        flag = settings.commute_tag
-        local_time = datetime.date.today()
+        #local_time = datetime.date.today()
         equator_length = 40075
         monthly_rides = []
         monthly_savings = []
@@ -151,50 +177,22 @@ def commute():
         commute_goal = 0
         commute_goal_percent = 0
 
-        if settings.latitude == 0:
-            for act in activities:
-                if act.start_latlng != None:
-                    slatlng = act.start_latlng
-                    elatlng= act.end_latlng
-                    if haversine(settings.longitude, settings.latitude, slatlng[1], slatlng[0]) < 0.3 or haversine(settings.longitude, settings.latitude, elatlng[1], elatlng[0]) < 0.5:
-                        commute_count += 1
-                        commute_distance += float(unithelper.kilometers(act.distance))
-                        ride_date = act.start_date_local
-                        monthly_savings.append(ride_date.month)
-                        #if check_monthly(act.start_date_local, local_time):
-                        monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
-                        dow_rides.append(int(ride_date.weekday()))
-        else:
-            for act in activities:
-                if flag == True:
-                    if act.commute == True:
-                        commute_count += 1
-                        commute_distance += float(unithelper.kilometers(act.distance))
-                        ride_date = act.start_date_local
-                        if check_monthly(act.start_date_local, local_time):
-                            monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
-                            monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
-                            dow_rides.append(int(ride_date.weekday()))
-                else:
-                    if settings.commute_string != None:
-                        if settings.commute_string.lower() in act.name.lower():
-                            commute_count += 1
-                            commute_distance += float(unithelper.kilometers(act.distance))
-                            ride_date = act.start_date_local
-                            monthly_savings.append(ride_date.month)
-                            #if check_monthly(act.start_date_local, local_time):
-                            monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
-                            dow_rides.append(int(ride_date.weekday()))
+        for act in activities:
+            check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, act.start_latlng, act.end_latlng, act))
+            true_count =  sum([1 for ct in check_types if ct])
+            if true_count > 0:
+                commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides = process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides,dow_rides)
+                
         day_count_list  = list(Counter(dow_rides).items())
         month_count_list =  list(Counter(monthly_savings).items())
         total_carbon = round((commute_count * settings.carbon_number) / 1000,2)
         total_carbon_trees = round((commute_count * settings.carbon_number) / 22100, 2)
-        #day_count_= list(day_count_l).item()
         commute_saving = settings.goal_savings * commute_count
         commute_goal = settings.goal_value - commute_saving
         commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
-        #monthly_rides_json = json.dumps(monthly_rides)
         commute_goal_title = settings.goal_name
+        if commute_distance == 0:
+            commute_distance = 1
         round_the_world = equator_length / commute_distance
 
     return render_template('commute.html',  total_distance = round(commute_distance,2),

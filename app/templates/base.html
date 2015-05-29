@@ -35,39 +35,36 @@
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
   </head>
-  <body>
+  <body padding="40px">
     <div id="wrapper">
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" background-color: #166711 role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top" background-color: #166711 role="navigation">
             <div class="container-fluid">
-            <a class="navbar-brand" href="index">Commutra</a>
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                </div>
-                <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="about"><i class="fa fa-question fa-3x"></i></a></li>
-                    <li><a href="contact"><i class="fa fa-envelope fa-3x"></i></a></li>
-                    <li><a href="settings"><i class="fa fa-cog fa-3x"></i></a></li>
-                </ul>
-                <div>
-
-            <!-- /.navbar-header -->
-        </div>
+                <a class="navbar-brand" href="index">Commutra</a>
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="about"><i class="fa fa-question fa-3x"></i></a></li>
+                            <li><a href="contact"><i class="fa fa-envelope fa-3x"></i></a></li>
+                            <li><a href="settings"><i class="fa fa-cog fa-3x"></i></a></li>
+                        </ul>
+                    </div>
+            </div>
         </nav>
-
    {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul>
+        <div class="alert alert-success">
         {% for message in messages %}
-            <li>{{ message }} </li>
+            {{ message }}</br>
         {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     {% endwith %}
 
