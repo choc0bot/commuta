@@ -139,7 +139,7 @@ def flag_check(flag, act):
     return 0
 
 def string_check(string, act):
-    if string != None:
+    if string != "":
         if string.lower() in act.name.lower():
             return 1
     return 0
@@ -209,7 +209,9 @@ def commute():
                                             percent_complete = commute_goal_percent,
                                             goal_title = commute_goal_title,
                                             round_the_world = round_the_world,
-                                            total_carbon_trees = total_carbon_trees)
+                                            total_carbon_trees = total_carbon_trees,
+                                            carbon_number = settings.carbon_number/1000,
+                                            goal_savings = settings.goal_savings)
 
 @app.route('/commute_details')
 def commute_details():
