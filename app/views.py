@@ -221,17 +221,14 @@ def commute_details():
     else:
         client = Client(TOKEN)
         activities = client.get_activities()
-        distance_count = 0
-        commute_count = 0
-        elapsed_count = 0
+        settings = commutra.query.filter_by(token=TOKEN).first()
+    commute_list = []
     for act in activities:
-        if "commute" in act.name.lower():
-            commute_count += 1
-            distance_count += float(act.distance)/1000
-            elapsed_count += datetime.timedelta.total_seconds(act.elapsed_time)
-    return render_template('commute_details.html',  total_commutes=commute_count,
-                                                    total_distance=round(distance_count,2),
-                                                    total_elapsed_time=str(datetime.timedelta(seconds=elapsed_count)))
+        check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, act.start_latlng, act.end_latlng, act))
+        true_count =  sum([1 for ct in check_types if ct])
+        if true_count > 0:
+            commute_list.append(act)
+    return render_template('commute_details.html',  all_commutes=commute_list)
 
 
 @app.route('/settings', methods=['GET', 'POST'])

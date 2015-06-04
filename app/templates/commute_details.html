@@ -3,13 +3,13 @@
 
 <div class="container">
 <div class="alert alert-info">
-	<h1><span>{{ total_commutes }} commutes</span></h1>
-</div>
-<div class="alert alert-success">
-    <h1><span>{{ total_distance }} kms</span></h1>
-</div>
-<div class="alert alert-info">
-    <h1><span>{{total_elapsed_time}} hours</span></h1>
+    {% for act in all_commutes %}
+        <row>
+            {{ act.name }}
+            {{ act.distance }}
+            {{ act.id }}
+        </row>
+    {% endfor %}
 </div>
 </div>
 
