@@ -65,7 +65,7 @@
                             <p><input data-slide="3" class="button btn btn-success" value="Next"></p>
                     </div><!--End Slide 2-->
                     <div class="slide" id="slide3" data-slide="3" data-stellar-background-ratio="0.5">
-
+                        <div class="wrapper">
  
                                 Location: <input type="text" id="map-address" style="width: 200px"/>
                                 Radius: <input type="text" id="map-radius"/>
@@ -75,7 +75,7 @@
                                     <script>
                                         $('#map').locationpicker({
                                             location: {latitude: 16.775822088029248, longitude: -3.0094385147094727},
-                                            radius: 300,
+                                            radius: 500,
                                             inputBinding: {
                                             latitudeInput: $('#map-lat'),
                                             longitudeInput: $('#map-lon'),
@@ -85,7 +85,7 @@
                                             enableAutocomplete: true
                                         });
                                     </script>
-
+                        </div>
                         <p><input data-slide="4" class="button btn btn-success" value="Next"></p>
                     </div><!--End Slide 3-->
                     <div class="slide" id="slide4" data-slide="4" data-stellar-background-ratio="0.5">
