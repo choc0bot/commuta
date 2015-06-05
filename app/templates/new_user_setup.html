@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<link rel="stylesheet" type="text/css" href="../static/js/style.css">
+
+<script type="text/javascript" src='http://maps.google.com/maps/api/js?sensor=false&libraries=places'></script>
+<script src="../static/jqloc/src/locationpicker.jquery.js"></script>
+  
+  <script type="text/javascript" src="../static/js/js.js"></script>
+  <script src="../static/stellar/jquery.stellar.js"></script>
+  <script src="../static/waypoints/lib/jquery.waypoints.min.js"></script>
+  <script type="text/javascript" src="../static/js/jquery.easing.1.3.js"></script>
+
+<div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-md-2">
+                    <ul class="navigation">
+                        <li data-slide="1">Location</li>
+                        <li data-slide="4">Money</li>
+                        <li data-slide="3">Enviroment</li>
+                    </ul>
+                </div>
+                <div class="col-md-8">
+                    <div class="slide" id="slide1" data-slide="1" data-stellar-background-ratio="0.5">
+                        <div class="wrapper">
+                            <h2>First we will need to decide how to filter your commuting activities from other cycling.</h2>
+                            <form action="" method="post" name="settings">
+                              {{ form.hidden_tag() }}
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-lg-2">
+                                    <h2>
+                                    {{ form.commute_tag }}
+                                    </h2>
+                                    </div>
+                                    <div class="col-lg-8">
+                                    <h2>
+                                        <label>Tick this box if you use Strava's built in commute tag to label some or all of your commutes</label>
+                                    </h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p><input data-slide="2" class="button btn btn-success" value="Next"></p>
+                    </div><!--End Slide 1-->
+                    <div class="slide" id="slide2" data-slide="2" data-stellar-background-ratio="0.5">
+                        <div class="wrapper">
+                            <div class="row">
+                                  <div class="form-group">
+                                        <div class="col-lg-3">
+                                        <h2>
+                                        {{ form.commute_string(class="form-control") }}
+                                        </h2>
+                                        </div>
+                                        <div class="col-lg-8">
+                                          <label><h2>If you use a unique name for your commuting activites please enter it here</h2></label>
+                                          <p>For example if you name your rides "Thursday morning commute", "Friday morning commute" etc. Then entering 'commute' in the text box would identify these rides.</p>
+                                        </div>
+                                  </div>
+                            </div>
+                        </div>
+                            <p><input data-slide="3" class="button btn btn-success" value="Next"></p>
+                    </div><!--End Slide 2-->
+                    <div class="slide" id="slide3" data-slide="3" data-stellar-background-ratio="0.5">
+
+ 
+                                Location: <input type="text" id="map-address" style="width: 200px"/>
+                                Radius: <input type="text" id="map-radius"/>
+                                <div id="map" style="width: 700px; height: 400px;"></div>
+                                Lat.: <input type="text" id="map-lat"/>
+                                Long.: <input type="text" id="map-lon"/>
+                                    <script>
+                                        $('#map').locationpicker({
+                                            location: {latitude: 16.775822088029248, longitude: -3.0094385147094727},
+                                            radius: 300,
+                                            inputBinding: {
+                                            latitudeInput: $('#map-lat'),
+                                            longitudeInput: $('#map-lon'),
+                                            radiusInput: $('#map-radius'),
+                                            locationNameInput: $('#map-address')
+                                            },
+                                            enableAutocomplete: true
+                                        });
+                                    </script>
+
+                        <p><input data-slide="4" class="button btn btn-success" value="Next"></p>
+                    </div><!--End Slide 3-->
+                    <div class="slide" id="slide4" data-slide="4" data-stellar-background-ratio="0.5">
+                        <div class="wrapper">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                  <div class="form-group">
+                                      <label>I am trying to achive the following goal</label><small> (pay off my bike, save a thousand dollars etc)</small>
+                                      {{ form.goal_string(class="form-control") }}
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                      <label>Please enter goal amount:</label>
+                                      {{ form.goal_number(class="form-control", size=20) }}
+                                      {% for error in form.goal_number.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                      {% endfor %}
+                                   </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                      <label>Amount saved per comute</label> <small>(this might be the cost of train ticket, or fuel savings etc)</small>
+                                      {{ form.savings(class="form-control") }}
+                                      {% for error in form.savings.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                      {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p><input data-slide="6" class="button btn btn-success" value="Next"></p>
+                    </div><!--End Slide 2-->
+                    <div class="slide" id="slide6" data-slide="6" data-stellar-background-ratio="0.5">
+                        <div class="wrapper">
+                            Slide 3
+                        </div>
+                        <p><input data-slide="6" class="button btn btn-success" value="Next"></p>
+                    </div><!--End Slide 2-->
+
+                    </div>
+
+{% endblock %}

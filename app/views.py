@@ -48,6 +48,7 @@ def about():
 def contact():
     return render_template('contact.html', title='Contact')
 
+
 @lm.user_loader
 def load_user(TOKEN):
     return commutra.query.get(TOKEN)
@@ -230,6 +231,22 @@ def commute_details():
             commute_list.append(act)
     return render_template('commute_details.html',  all_commutes=commute_list)
 
+@app.route('/new_user_setup')
+def new_user_setup():
+    global TOKEN
+    form = SettingsForm()
+    if form.validate_on_submit():
+        commute.commute_tag = form.commute_tag.data
+        commute.commute_string = form.commute_string.data
+        commute.goal_name = form.goal_string.data
+        commute.goal_value = form.goal_number.data
+        commute.goal_savings = form.savings.data
+        commute.carbon_number = form.carbon_number.data
+        commute.latitude = form.latitude.data
+        commute.longitude = form.longitude.data
+        #user = commutra(token=TOKEN,commute_tag=commute.commute_tag,commute_string=commute.commute_string,goal_name=commute.goal_name,goal_value=commute.goal_value,goal_savings=commute.goal_savings)
+        user = commutra(token=TOKEN)
+    return render_template('new_user_setup.html', title='new_user_setup',form=form)
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
