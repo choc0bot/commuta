@@ -11,6 +11,7 @@ class commutra(db.Model):
     carbon_number = db.Column(db.Integer)
     latitude = db.Column(db.Integer)
     longitude = db.Column(db.Integer)
+    gpsrange = db.Column(db.Integer)
 
     def is_authenticated(self):
         return True

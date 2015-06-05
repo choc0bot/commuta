@@ -145,9 +145,10 @@ def string_check(string, act):
             return 1
     return 0
 
-def gps_check(settings_longitude, settings_latitude, start_latlng, end_latlng,act):
+def gps_check(settings_longitude, settings_latitude, settings_gpsrange, start_latlng, end_latlng,act):
     if act.start_latlng != None:
-        if haversine(settings_longitude, settings_latitude, start_latlng[1], start_latlng[0]) < 0.5 or haversine(settings_longitude, settings_latitude, end_latlng[1], end_latlng[0]) < 0.5:
+        gpsrange = float(settings_gpsrange) / 1000
+        if haversine(settings_longitude, settings_latitude, start_latlng[1], start_latlng[0]) < gpsrange or haversine(settings_longitude, settings_latitude, end_latlng[1], end_latlng[0]) < gpsrange:
             return 1
     return 0
 
@@ -179,7 +180,7 @@ def commute():
         commute_goal_percent = 0
 
         for act in activities:
-            check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, act.start_latlng, act.end_latlng, act))
+            check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings.gpsrange, act.start_latlng, act.end_latlng, act))
             true_count =  sum([1 for ct in check_types if ct])
             if true_count > 0:
                 commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides = process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides,dow_rides)
@@ -225,7 +226,7 @@ def commute_details():
         settings = commutra.query.filter_by(token=TOKEN).first()
     commute_list = []
     for act in activities:
-        check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, act.start_latlng, act.end_latlng, act))
+        check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings_gpsrange, act.start_latlng, act.end_latlng, act))
         true_count =  sum([1 for ct in check_types if ct])
         if true_count > 0:
             commute_list.append(act)
@@ -244,6 +245,7 @@ def new_user_setup():
         commute.carbon_number = form.carbon_number.data
         commute.latitude = form.latitude.data
         commute.longitude = form.longitude.data
+        commute.gpsrange = form.gpsrange.data
         #user = commutra(token=TOKEN,commute_tag=commute.commute_tag,commute_string=commute.commute_string,goal_name=commute.goal_name,goal_value=commute.goal_value,goal_savings=commute.goal_savings)
         user = commutra(token=TOKEN)
     return render_template('new_user_setup.html', title='new_user_setup',form=form)
@@ -263,6 +265,7 @@ def settings():
         commute.carbon_number = form.carbon_number.data
         commute.latitude = form.latitude.data
         commute.longitude = form.longitude.data
+        commute.gpsrange = form.gpsrange.data
         #user = commutra(token=TOKEN,commute_tag=commute.commute_tag,commute_string=commute.commute_string,goal_name=commute.goal_name,goal_value=commute.goal_value,goal_savings=commute.goal_savings)
         user = commutra(token=TOKEN)
         if user.is_authenticated():
@@ -275,6 +278,7 @@ def settings():
             user.carbon_number = commute.carbon_number
             user.latitude = commute.latitude
             user.longitude = commute.longitude
+            user.gpsrange = commute.gpsrange
             db.session.commit()
             flash('Your changes have been saved.')
             flash('Settings saved')
@@ -283,7 +287,7 @@ def settings():
     if user.is_authenticated():
         user = commutra.query.filter_by(token=TOKEN).first()
         return render_template( 'settings.html',
-                                title='Settings',user=user,
+                                title='Settings',user=user, latitude = user.latitude, longitude = user.longitude, gpsrange = user.gpsrange,
                                 form=SettingsForm(  commute_tag=user.commute_tag,
                                                     commute_string=user.commute_string,
                                                     goal_string=user.goal_name,
@@ -291,5 +295,6 @@ def settings():
                                                     savings=user.goal_savings,
                                                     carbon_number=user.carbon_number,
                                                     latitude = user.latitude,
-                                                    longitude = user.longitude))
+                                                    longitude = user.longitude,
+                                                    gpsrange = user.gpsrange))
     return render_template('settings.html',title='Settings',form=form)

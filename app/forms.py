@@ -15,3 +15,4 @@ class SettingsForm(Form):
     carbon_number = FloatField('carbon_number', validators=[NumberRange(1,999)])
     latitude = FloatField('latitude')
     longitude = FloatField('longitude')
+    gpsrange = FloatField('gpsrange')
