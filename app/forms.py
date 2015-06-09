@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, BooleanField, FloatField
+from wtforms import StringField, BooleanField, FloatField, SelectField
 from wtforms.validators import DataRequired, NumberRange
 
 class LoginForm(Form):
@@ -15,4 +15,4 @@ class SettingsForm(Form):
     carbon_number = FloatField('carbon_number', validators=[NumberRange(1,999)])
     latitude = FloatField('latitude')
     longitude = FloatField('longitude')
-    gpsrange = FloatField('gpsrange')
+    gpsrange =  SelectField('gpsrange', choices=[(500, '500'), (1000, '1000'), (2500, '2500'), (5000, '5000')],coerce=int,)

@@ -225,12 +225,21 @@ def commute_details():
         activities = client.get_activities()
         settings = commutra.query.filter_by(token=TOKEN).first()
     commute_list = []
+    elapsed_time =  datetime.timedelta(**{'days': 2})
+    moving_time =  datetime.timedelta(**{'days': 2})
     for act in activities:
-        check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings_gpsrange, act.start_latlng, act.end_latlng, act))
+        check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings.gpsrange, act.start_latlng, act.end_latlng, act))
         true_count =  sum([1 for ct in check_types if ct])
         if true_count > 0:
             commute_list.append(act)
-    return render_template('commute_details.html',  all_commutes=commute_list)
+            if act.elapsed_time < elapsed_time:
+                elapsed_time = act.elapsed_time
+            if act.moving_time < moving_time:
+                moving_time = act.moving_time
+    return render_template('commute_details.html',  all_commutes=commute_list,
+                                                    best_elapsed_time = elapsed_time,
+                                                    best_moving_time = moving_time
+                                                    )
 
 @app.route('/new_user_setup')
 def new_user_setup():

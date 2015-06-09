@@ -2,12 +2,15 @@
 {% block content %}
 
 <div class="container">
+    <h3>{{ best_elapsed_time }}</h3>
+    <h3>{{ best_moving_time }}</h3>
 <div class="alert alert-info">
     {% for act in all_commutes %}
         <row>
             {{ act.name }}
             {{ act.distance }}
             {{ act.id }}
+            {{ act.elapsed_time }}
         </row>
     {% endfor %}
 </div>

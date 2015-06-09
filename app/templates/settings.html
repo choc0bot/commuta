@@ -31,9 +31,10 @@
         <div class="col-lg-5">
             <div class="form-group">
               <label>Move the marker, or double click on the map to set your commute destination (generally your workplace)</label>
-                Location: <input type="text" id="map-address" style="width: 200px"/>
-                <br>
-                <label>Radius:</label> {{ form.gpsrange(class="form-control", id="map-radius") }}
+                <label>Location: </label></br><input type="text" class="form-control" id="map-address"/>
+                    <label>Radius:</label>
+                                    {{ form.gpsrange(class="form-control", id="map-radius") }}
+
                 <div id="map" style="width: 700px; height: 400px;"></div>
                 <label>latitude:</label> {{ form.latitude(class="form-control", id="map-lat") }}
                 <br>
@@ -42,7 +43,6 @@
                     <script>
                         $('#map').locationpicker({
                             location: {latitude: {{ latitude }}, longitude: {{ longitude}} },
-                            radius: {{ gpsrange }},
                             inputBinding: {
                             latitudeInput: $('#map-lat'),
                             longitudeInput: $('#map-lon'),
