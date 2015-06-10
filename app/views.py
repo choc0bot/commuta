@@ -124,14 +124,15 @@ def haversine(lon1, lat1, lon2, lat2):
     r = 6371 # Radius of earth in kilometers. Use 3956 for miles
     return c * r
 
-def process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides):
+def process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides, monthly_distance):
     commute_count += 1
     commute_distance += float(unithelper.kilometers(act.distance))
     ride_date = act.start_date_local
     monthly_savings.append(ride_date.month)
     monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
+    monthly_distance.append([ride_date, convert_timedelta(act.elapsed_time), (act.distance/1000)])
     dow_rides.append(int(ride_date.weekday()))
-    return(commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides)
+    return(commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides, monthly_distance)
 
 def flag_check(flag, act):
     if flag == True:
@@ -171,6 +172,7 @@ def commute():
         equator_length = 40075
         monthly_rides = []
         monthly_savings = []
+        monthly_distance = []
         dow_rides = []
         commute_count = 0
         commute_distance = 0.0
@@ -183,12 +185,13 @@ def commute():
             check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings.gpsrange, act.start_latlng, act.end_latlng, act))
             true_count =  sum([1 for ct in check_types if ct])
             if true_count > 0:
-                commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides = process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides,dow_rides)
-                
+                commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides, monthly_distance = process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides, monthly_distance)
+
         day_count_list  = list(Counter(dow_rides).items())
         month_count_list =  list(Counter(monthly_savings).items())
-        total_carbon = round((commute_count * settings.carbon_number) / 1000,2)
-        total_carbon_trees = round((commute_count * settings.carbon_number) / 22100, 2)
+        month_distance_list =  list(Counter(monthly_distance).items())
+        total_carbon = round((commute_distance * settings.carbon_number) / 1000,2)
+        total_carbon_trees = round((commute_distance * settings.carbon_number) / 22100, 2)
         commute_saving = settings.goal_savings * commute_count
         commute_goal = settings.goal_value - commute_saving
         commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
@@ -202,6 +205,7 @@ def commute():
                                             day_count = day_count_list,
                                             monthly_savings = month_count_list,
                                             monthly_rides = monthly_rides,
+                                            monthly_distance = monthly_distance_list,
                                             firstname = athlete.firstname,
                                             lastname = athlete.lastname,
                                             athlete = athlete,
@@ -212,7 +216,7 @@ def commute():
                                             goal_title = commute_goal_title,
                                             round_the_world = round_the_world,
                                             total_carbon_trees = total_carbon_trees,
-                                            carbon_number = settings.carbon_number/1000,
+                                            carbon_number = settings.carbon_number,
                                             goal_savings = settings.goal_savings)
 
 @app.route('/commute_details')

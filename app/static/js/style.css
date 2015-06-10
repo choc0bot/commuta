@@ -30,7 +30,7 @@
     background-attachment: fixed;
     width:100%;
     height:100%;
-    padding: 40px 10px;
+    padding: 30px 10px;
     position: relative;
 
 }
@@ -52,7 +52,7 @@
 .button{
     display:block;
     position:absolute;
-    bottom:0px;
+    bottom:10px;
     left:50%;
 }
 .button:hover{
@@ -74,46 +74,6 @@
 
     
 }
-#slide2 img:first-child{
-    position:absolute;
-top: 700px;
-left: -150px;
-}
-#slide2 img:nth-child(2){
-    position:absolute;
-    top:300px;
-    left:100px;
-}
-#slide2 img:nth-child(3){
-    position:absolute;
-    top:600px;
-    left:300px;
-}
-#slide2 img:nth-child(4){
-    position:absolute;
-    top:400px;
-    left:300px;
-}
-#slide2 img:nth-child(5){
-    position:absolute;
-    top:600px;
-    right:300px;
-}
-#slide2 img:nth-child(6){
-    position:absolute;
-    top:600px;
-    right:300px;
-}
-#slide2 img:nth-child(7){
-    position:absolute;
-    top:400px;
-    right:100px;
-}
-#slide2 img:nth-child(8){
-    position:absolute;
-    top:100px;
-    right:300px;
-}
 /******************************
  SLIDE 3 
 *******************************/
@@ -126,17 +86,6 @@ left: -150px;
 *******************************/
 
 #slide4{
-    background-image:url(../images/Slide4/desktop4.jpg);
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-}
-#slide4 .parallaxbg{
-    position:absolute;
-    right:40px;
-    top:40px;
-    font-size:28px;
-    color:rgba(51,51,51,0.3);
+
 }
 

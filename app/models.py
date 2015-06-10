@@ -27,3 +27,14 @@ class commutra(db.Model):
             return unicode(self.id)  # python 2
         except NameError:
             return str(self.id)  # python 3
+
+class emissions(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    vehicle = db.Column(db.String(64), index=True, unique=True)
+    carbon = db.Column(db.Integer, index=True)
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3

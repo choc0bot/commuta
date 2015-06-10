@@ -180,10 +180,10 @@
 
 new Morris.Area({
   element: 'myfirstchart',
-  data: [{% for ride in monthly_savings %}{
+  data: [{% for ride in monthly_distance %}{
         month: '{{ ride[0] | monthfilter }}',
         value: {{ ride[1] * goal_savings }},
-        value1: {{ (ride[1] * 10 * carbon_number) }} 
+        value1: {{ (ride[2] * carbon_number)/1000 }} 
         },{% endfor %}],
   // The name of the data record attribute that contains x-values.
   xkey: 'month',
