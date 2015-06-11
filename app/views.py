@@ -6,7 +6,7 @@ from stravalib.client import Client, unithelper
 import config as cfg
 import datetime
 import calendar
-from collections import Counter
+from collections import Counter, defaultdict
 from .models import commutra
 from .forms import SettingsForm
 
@@ -34,6 +34,9 @@ def datefilter(value, time_format='%m'):
     """convert a datetime to a different format."""
     return value.strftime(time_format)
 
+def datetime_to_month(dtime):
+    """convert a datetime to month string"""
+    return dtime.strftime('%B')
 
 @app.route('/')
 @app.route('/index')
@@ -110,29 +113,40 @@ def convert_timedelta(delta_to_convert):
 
 def haversine(lon1, lat1, lon2, lat2):
     """
-    Calculate the great circle distance between two points 
+    Calculate the great circle distance between two points
     on the earth (specified in decimal degrees)
     """
-    # convert decimal degrees to radians 
+    # convert decimal degrees to radians
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
-    # haversine formula 
-    dlon = lon2 - lon1 
-    dlat = lat2 - lat1 
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    c = 2 * asin(sqrt(a)) 
+    c = 2 * asin(sqrt(a))
     r = 6371 # Radius of earth in kilometers. Use 3956 for miles
     return c * r
 
-def process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides, monthly_distance):
+def process_activities(act, commute_count, commute_distance, commute_elevation, monthly_savings, monthly_rides, dow_rides, monthly_distance):
     commute_count += 1
-    commute_distance += float(unithelper.kilometers(act.distance))
+    ride_distance = float(unithelper.kilometers(act.distance))
+    commute_distance += ride_distance
+    commute_elevation += float(unithelper.meters(act.total_elevation_gain))
     ride_date = act.start_date_local
     monthly_savings.append(ride_date.month)
     monthly_rides.append([ride_date, convert_timedelta(act.elapsed_time)])
-    monthly_distance.append([ride_date, convert_timedelta(act.elapsed_time), (act.distance/1000)])
+    monthly_distance.append([ride_date.month, ride_distance])
     dow_rides.append(int(ride_date.weekday()))
-    return(commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides, monthly_distance)
+    return(commute_count, commute_distance, commute_elevation, monthly_savings, monthly_rides, dow_rides, monthly_distance)
+
+def monthly_activities(my_list):
+    month_total_list = []
+    d = defaultdict(list)
+    for tag, num in my_list:
+        d[tag].append(num)
+    for k, v in d.iteritems():
+        month_total_list.append((k, sum(v)))
+    return month_total_list
 
 def flag_check(flag, act):
     if flag == True:
@@ -173,9 +187,11 @@ def commute():
         monthly_rides = []
         monthly_savings = []
         monthly_distance = []
+        monthly_distance_list = []
         dow_rides = []
         commute_count = 0
         commute_distance = 0.0
+        commute_elevation = 0.0
         day_count_list = []
         commute_saving = 0
         commute_goal = 0
@@ -185,11 +201,13 @@ def commute():
             check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings.gpsrange, act.start_latlng, act.end_latlng, act))
             true_count =  sum([1 for ct in check_types if ct])
             if true_count > 0:
-                commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides, monthly_distance = process_activities(act, commute_count, commute_distance, monthly_savings, monthly_rides, dow_rides, monthly_distance)
+                commute_count, commute_distance, commute_elevation, monthly_savings, monthly_rides, dow_rides, monthly_distance = process_activities(act, commute_count, commute_distance, commute_elevation, monthly_savings, monthly_rides, dow_rides, monthly_distance)
 
         day_count_list  = list(Counter(dow_rides).items())
         month_count_list =  list(Counter(monthly_savings).items())
-        month_distance_list =  list(Counter(monthly_distance).items())
+        monthly_distance_temp = monthly_activities(monthly_distance)
+        for (f,b) in zip(month_count_list, monthly_distance_temp):
+            monthly_distance_list.append([f[0],f[1],b[1]])
         total_carbon = round((commute_distance * settings.carbon_number) / 1000,2)
         total_carbon_trees = round((commute_distance * settings.carbon_number) / 22100, 2)
         commute_saving = settings.goal_savings * commute_count
@@ -197,10 +215,12 @@ def commute():
         commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
         commute_goal_title = settings.goal_name
         if commute_distance == 0:
-            commute_distance = 1
-        round_the_world = equator_length / commute_distance
+            round_the_world = 0
+        else:
+            round_the_world = equator_length / commute_distance
 
     return render_template('commute.html',  total_distance = round(commute_distance,2),
+                                            total_elevation = round(commute_elevation,2),
                                             total_carbon = total_carbon,
                                             day_count = day_count_list,
                                             monthly_savings = month_count_list,
@@ -244,6 +264,73 @@ def commute_details():
                                                     best_elapsed_time = elapsed_time,
                                                     best_moving_time = moving_time
                                                     )
+
+@app.route('/distance')
+def commute_distance():
+    global TOKEN
+    if TOKEN == "":
+        return redirect('/login')
+    else:
+        client = Client(TOKEN)
+        athlete = client.get_athlete()
+        activities = client.get_activities()
+        settings = commutra.query.filter_by(token=TOKEN).first()
+        #local_time = datetime.date.today()
+        equator_length = 40075
+        monthly_rides = []
+        monthly_savings = []
+        monthly_distance = []
+        monthly_distance_list = []
+        dow_rides = []
+        commute_count = 0
+        commute_distance = 0.0
+        commute_elevation = 0.0
+        day_count_list = []
+        commute_saving = 0
+        commute_goal = 0
+        commute_goal_percent = 0
+
+        for act in activities:
+            check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings.gpsrange, act.start_latlng, act.end_latlng, act))
+            true_count =  sum([1 for ct in check_types if ct])
+            if true_count > 0:
+                commute_count, commute_distance, commute_elevation, monthly_savings, monthly_rides, dow_rides, monthly_distance = process_activities(act, commute_count, commute_distance, commute_elevation, monthly_savings, monthly_rides, dow_rides, monthly_distance)
+
+        day_count_list  = list(Counter(dow_rides).items())
+        month_count_list =  list(Counter(monthly_savings).items())
+        monthly_distance_temp = monthly_activities(monthly_distance)
+        for (f,b) in zip(month_count_list, monthly_distance_temp):
+            monthly_distance_list.append([f[0],f[1],b[1]])
+        total_carbon = round((commute_distance * settings.carbon_number) / 1000,2)
+        total_carbon_trees = round((commute_distance * settings.carbon_number) / 22100, 2)
+        commute_saving = settings.goal_savings * commute_count
+        commute_goal = settings.goal_value - commute_saving
+        commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
+        commute_goal_title = settings.goal_name
+        if commute_distance == 0:
+            round_the_world = 0
+        else:
+            round_the_world = equator_length / commute_distance
+
+    return render_template('distance.html',  total_distance = round(commute_distance,2),
+                                            total_elevation = round(commute_elevation,2),
+                                            total_carbon = total_carbon,
+                                            day_count = day_count_list,
+                                            monthly_savings = month_count_list,
+                                            monthly_rides = monthly_rides,
+                                            monthly_distance = monthly_distance_list,
+                                            firstname = athlete.firstname,
+                                            lastname = athlete.lastname,
+                                            athlete = athlete,
+                                            total_commutes = commute_count,
+                                            total_savings = commute_saving,
+                                            goal = commute_goal,
+                                            percent_complete = commute_goal_percent,
+                                            goal_title = commute_goal_title,
+                                            round_the_world = round_the_world,
+                                            total_carbon_trees = total_carbon_trees,
+                                            carbon_number = settings.carbon_number,
+                                            goal_savings = settings.goal_savings)
 
 @app.route('/new_user_setup')
 def new_user_setup():

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+
+<div class="wrapper">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-forward fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ total_distance }} kms</div>
+                                <div>Total distance</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                   <i class="fa fa-line-chart fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ total_elevation }} metres</div>
+                                    <div>Total elevation</div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="roundtheworld" ></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+new Morris.Donut({
+  element: 'roundtheworld',
+  data: [{label: 'Distance Covered', value: {{ total_distance }} },
+         {label: 'Remaining', value: {{40075 - total_distance}} },
+        ],
+  colors: ['#7E1518', '#103910']
+});
+
+</script>
+
+{% endblock %}
