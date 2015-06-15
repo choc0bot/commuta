@@ -280,57 +280,31 @@ def commute_distance():
         monthly_rides = []
         monthly_savings = []
         monthly_distance = []
-        monthly_distance_list = []
         dow_rides = []
         commute_count = 0
         commute_distance = 0.0
         commute_elevation = 0.0
-        day_count_list = []
-        commute_saving = 0
-        commute_goal = 0
-        commute_goal_percent = 0
+        commute_longest = 0.0
 
         for act in activities:
             check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings.gpsrange, act.start_latlng, act.end_latlng, act))
             true_count =  sum([1 for ct in check_types if ct])
             if true_count > 0:
                 commute_count, commute_distance, commute_elevation, monthly_savings, monthly_rides, dow_rides, monthly_distance = process_activities(act, commute_count, commute_distance, commute_elevation, monthly_savings, monthly_rides, dow_rides, monthly_distance)
+                ride_distance = float(unithelper.kilometers(act.distance))
+                if ride_distance > commute_longest:
+                    commute_longest = ride_distance
 
-        day_count_list  = list(Counter(dow_rides).items())
-        month_count_list =  list(Counter(monthly_savings).items())
-        monthly_distance_temp = monthly_activities(monthly_distance)
-        for (f,b) in zip(month_count_list, monthly_distance_temp):
-            monthly_distance_list.append([f[0],f[1],b[1]])
-        total_carbon = round((commute_distance * settings.carbon_number) / 1000,2)
-        total_carbon_trees = round((commute_distance * settings.carbon_number) / 22100, 2)
-        commute_saving = settings.goal_savings * commute_count
-        commute_goal = settings.goal_value - commute_saving
-        commute_goal_percent = int(round((commute_saving/settings.goal_value)*100))
-        commute_goal_title = settings.goal_name
         if commute_distance == 0:
             round_the_world = 0
         else:
             round_the_world = equator_length / commute_distance
 
-    return render_template('distance.html',  total_distance = round(commute_distance,2),
+    return render_template('distance.html', total_distance = round(commute_distance,2),
                                             total_elevation = round(commute_elevation,2),
-                                            total_carbon = total_carbon,
-                                            day_count = day_count_list,
-                                            monthly_savings = month_count_list,
-                                            monthly_rides = monthly_rides,
-                                            monthly_distance = monthly_distance_list,
-                                            firstname = athlete.firstname,
-                                            lastname = athlete.lastname,
-                                            athlete = athlete,
-                                            total_commutes = commute_count,
-                                            total_savings = commute_saving,
-                                            goal = commute_goal,
-                                            percent_complete = commute_goal_percent,
-                                            goal_title = commute_goal_title,
                                             round_the_world = round_the_world,
-                                            total_carbon_trees = total_carbon_trees,
-                                            carbon_number = settings.carbon_number,
-                                            goal_savings = settings.goal_savings)
+                                            longest_ride = round(commute_longest,2),
+                                            equator_length = equator_length )
 
 @app.route('/new_user_setup')
 def new_user_setup():
