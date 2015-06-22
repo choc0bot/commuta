@@ -285,6 +285,7 @@ def commute_distance():
         commute_distance = 0.0
         commute_elevation = 0.0
         commute_longest = 0.0
+        commute_fastest = 0.0
 
         for act in activities:
             check_types = (flag_check(settings.commute_tag, act), string_check(settings.commute_string,act), gps_check(settings.longitude, settings.latitude, settings.gpsrange, act.start_latlng, act.end_latlng, act))
@@ -294,6 +295,11 @@ def commute_distance():
                 ride_distance = float(unithelper.kilometers(act.distance))
                 if ride_distance > commute_longest:
                     commute_longest = ride_distance
+                    strava_id_longest = act.id
+                ride_speed = float(unithelper.kph(act.average_speed))
+                if ride_speed > commute_fastest:
+                    commute_fastest = ride_speed
+                    strava_id_fastest = act.id
 
         if commute_distance == 0:
             round_the_world = 0
@@ -304,6 +310,9 @@ def commute_distance():
                                             total_elevation = round(commute_elevation,2),
                                             round_the_world = round_the_world,
                                             longest_ride = round(commute_longest,2),
+                                            longest_id = strava_id_longest,
+                                            fastest_ride = round(commute_fastest,2),
+                                            fastest_id = strava_id_fastest,
                                             equator_length = equator_length )
 
 @app.route('/new_user_setup')
