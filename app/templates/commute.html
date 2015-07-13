@@ -5,176 +5,120 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
 
-<div>
-    <div class="row">
-        <div class="col-lg-12">
-            <h1 class="page-header">Commuting overview for {{ firstname }} {{ lastname }}</h1>
+<!-- NAV -->
+
+<div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
+        <header class="demo-drawer-header">
+          <img src="{{ image_url }}" class="demo-avatar">
+          <div class="demo-avatar-dropdown">
+            <span>{{ firstname}} {{ lastname}}</span>
+            <div class="mdl-layout-spacer"></div>
+            <button id="accbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+              <i class="material-icons">arrow_drop_down</i>
+            </button>
+            <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
+              <button class="mdl-menu__item">{{ firstname}} {{ lastname}}</button>
+              <button class="mdl-menu__item">info@domain.net</button>
+              <button class="mdl-menu__item">Add another account...</button>
+            </ul>
+          </div>
+        </header>
+        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">home</i>Home</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">inbox</i>Inbox</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">delete</i>Trash</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">report</i>Spam</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">forum</i>Forums</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">flag</i>Updates</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">local_offer</i>Promos</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">shopping_cart</i>Purchases</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">people</i>Social</a>
+          <div class="mdl-layout-spacer"></div>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">help_outline</i></a>
+        </nav>
+      </div>
+      <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-grid demo-content">
+
+<!-- END NAV -->
+
+        <div class="mdl-cell mdl-cell--12-col mdl-grid">
+            <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-desktop">
+              <div class="mdl-card__title mdl-card--expand mdl-color--teal-300">
+                <h1>{{ total_commutes }}</h1>
+              </div>
+                    <h2 class="mdl-card__title-text">Commutes</h2>
+              <div class="mdl-card__actions mdl-card--border">
+                <a href="commute_details" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
+              </div>
+            </div>
+            <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-desktop">
+                <div class="mdl-card__title mdl-card--expand mdl-color--deep-purple-500">
+                    <h1>${{total_savings}}</h1>
+                </div>
+                    <h2 class="mdl-card__title-text">saved!</h2>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="#" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
+                    <i class="material-icons md-24">local_atm</i>
+                </div>
+            </div>
+            <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-desktop">
+                <div class="mdl-card__title mdl-card--expand mdl-color--indigo-500">
+                    <div id="piegoal" ></div>
+                </div>
+                <h1 class="mdl-card__title-text">${{goal}} remaining</h2>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="#" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
+                </div>
+            </div>
         </div>
-        <!-- /.col-lg-12 -->
-     </div>
 
-    <div class="row">
-        <div class="col-md-9">
-            <div class="col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                              <i class="fa fa-road fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ total_commutes }}</div>
-                                <div>Commutes</div>
-                             </div>
-                        </div>
-                    </div>
-                        <a href="commute_details">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                </div>
+        <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+            <div id="myfirstchart"></div>
+        </div>
+        <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-desktop">
+            <div class="mdl-card__title mdl-card--expand mdl-color--blue-500">
+                <div id="weeklypie" ></div>
             </div>
-            <div class="col-md-4">
-                <div class="panel panel-green">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                   <i class="fa fa-money fa-3x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">${{total_savings}}</div>
-                                    <div>saved!</div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-red">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-check-square fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">${{goal}}</div>
-                                <div>remaining</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="#">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Details</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
+                <h1 class="mdl-card__title-text">Favorite day to commute</h2>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="#" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
                 </div>
             </div>
 
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-bar-chart-o fa-fw"></i> Rides by Month
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <div id="myfirstchart"></div>
-                    </div>
-                        <!-- /.panel-body -->
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="panel panel-yellow">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-forward fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{total_distance}}</div>
-                                <div>Total distance</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="/distance">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Details</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right "></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
+
+    <div class="mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-desktop">
+                <div class="mdl-card__title mdl-card--expand mdl-color--teal-300">
+                    <h1>{{total_distance}}</h1>
+                </div>
+                    <h2 class="mdl-card__title-text">Total distance</h2>
+              <div class="mdl-card__actions mdl-card--border">
+                <a href="commute_details" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
+              </div>
+            </div>
+            <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-desktop">
+                <div class="mdl-card__title mdl-card--expand mdl-color--deep-purple-500">
+                    <h1>{{ total_carbon }}</h1>
+                </div>
+                    <h2 class="mdl-card__title-text">kilograms of carbon</h2>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="commute_details" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                              <i class="fa fa-recycle fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ total_carbon }}</div>
-                                <div>kilograms of carbon</div>
-                             </div>
-                        </div>
-                    </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
+            <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-desktop">
+                <div class="mdl-card__title mdl-card--expand mdl-color--green-500">
+                    <h1>{{ total_carbon_trees }}</h2>
+                </div>
+                    <h2 class="mdl-card__title-text">Trees</h2>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="commute_details" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="panel panel-green">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                              <i class="fa fa-tree fa-3x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ total_carbon_trees }}</div>
-                                <div>Trees</div>
-                             </div>
-                        </div>
-                    </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                </div>
             </div>
 
         </div>
-    <div class="col-md-3">
-        <h3>{{ goal_title }}</h3>
-        <div id="piegoal" ></div>
-        <h3>Favorite day to commute</h3>
-        <div id="weeklypie" ></div>
-
-    </div>
-</div>
-
-
-
-</div>
 
 <script>
 
@@ -183,7 +127,7 @@ new Morris.Area({
   data: [{% for ride in monthly_distance %}{
         month: '{{ ride[0] | monthfilter }}',
         value: {{ ride[1] * goal_savings }},
-        value1: {{ (ride[2] * carbon_number)/1000 }} 
+        value1: {{ (ride[2] * carbon_number)/1000 }}
         },{% endfor %}],
   // The name of the data record attribute that contains x-values.
   xkey: 'month',
@@ -192,7 +136,10 @@ new Morris.Area({
   // Labels for the ykeys -- will be displayed when you hover over the
   // chart.
   labels: ['Savings', 'Carbon'],
-  lineColors: ['#7E1518', '#5AAC56'],
+  lineColors:  ['#ACEC00', '#EBFBC0'],
+  lineWidth: 2,
+  pointSize: 1,
+  smooth: false,
   parseTime: false,
   behaveLikeLine: true
 });

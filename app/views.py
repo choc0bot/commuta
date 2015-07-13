@@ -237,7 +237,8 @@ def commute():
                                             round_the_world = round_the_world,
                                             total_carbon_trees = total_carbon_trees,
                                             carbon_number = settings.carbon_number,
-                                            goal_savings = settings.goal_savings)
+                                            goal_savings = settings.goal_savings,
+                                            image_url = athlete.profile_medium)
 
 @app.route('/commute_details')
 def commute_details():
