@@ -1,0 +1,25 @@
+.h1 {
+  text-align: right;
+  color: #fff;
+}
+.mdl-card{
+  margin: 5px;
+}
+.mdl-card__title {
+  //background: rgb(205,220,57);
+  }
+.icon-background {
+    color: #bbb;
+  }
+.mdl-card__supporting-text {
+  background: rgb(205,220,57);
+}
+.mdl-card__actions{
+  background: #eee;
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+.material-icons.md-96 { font-size: 96px; }
