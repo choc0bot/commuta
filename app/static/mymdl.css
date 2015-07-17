@@ -5,6 +5,9 @@
 .mdl-card{
   margin: 5px;
 }
+.big-card{
+  margin: 5px;
+}
 .mdl-card__title {
   //background: rgb(205,220,57);
   }
