@@ -3,15 +3,13 @@
 
         <h1>Welcome to Commutra</h1>
         <p>Did you ever wanted to filter your commuting stats from your other Strava activities. This is an effort to do just that</p>
-        <div class="row">
-            <div class="col-lg-7">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                                <div class="panel-body">
-                                    <img class="img-responsive" src="{{ url_for('static', filename='images/commutra_screen.png') }}">
-                            </div>
-                        </div>
-                    </div>
+        <div class="mdl-cell mdl-cell--12-col mdl-grid">
+            <div class="mdl-cell--2-col">
+            </div>
+            <div class="mdl-cell--8-col">
+                <img class="img-responsive" src="{{ url_for('static', filename='images/commutra_screen.png') }}">
+            </div>
+            <div class="mdl-cell--2-col">
             </div>
         </div>
         <p><a class="btn btn-primary btn-lg" href="commute" role="button">View your stats</a></p>
