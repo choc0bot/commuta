@@ -8,15 +8,16 @@
 .big-card{
   margin: 5px;
 }
-.mdl-card__title {
-  //background: rgb(205,220,57);
-  }
 .icon-background {
     color: #bbb;
   }
 
 .mdl-card__actions{
   background: #eee;
+}
+.mychart{
+  height: 225px;
+  width: 350px;
 }
 
 .material-icons.md-18 { font-size: 18px; }
