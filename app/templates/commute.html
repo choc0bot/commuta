@@ -12,7 +12,7 @@
                     <h1>{{ total_commutes }}</h1>
                 </div>
                 <h2 class="mdl-card__title-text">commutes </h2>
-                <div class="mdl-card__supporting-text mdl-color--orange-700">
+                <div class="mdl-card__supporting-text mdl-color--green-600">
                     <span class="mdl-typography--subhead-color-contrast">
                         <a href="#" class="mdl-button">Latest Commute March 24th, 2014</a>
                     </span>
@@ -30,7 +30,7 @@
                     <h1>${{total_savings}}</h1>
                 </div>
                 <h2 class="mdl-card__title-text">savings</h2>
-                <div class="mdl-card__supporting-text mdl-color--orange-500">
+                <div class="mdl-card__supporting-text mdl-color--green-500">
                         <a href="#" class="mdl-button">$96 dollars saved this month</a>
                 </div>
                 <div class="mdl-card__actions mdl-card--border">
@@ -45,43 +45,34 @@
                 </div>
                     <h2 class="mdl-card__title-text">${{goal}} remaining</h2>
             </div>
-        
 
-          <div class="mdl-card mdl-shadow--4dp">
+        <div class="mdl-card mdl-shadow--4dp">
             <div class="mdl-card__title mdl-card--border">
                 <div class="mychart" id="weeklypie"></div>
             </div>
                 <h2 class="mdl-card__title-text">Favorite day to commute</h2>
-          </div>
-
-          <div class="mdl-cell--8-col big-card mdl-shadow--4dp">
-
-              <div id="myfirstchart" style="height: 300px;"></div>
-
-   
         </div>
 
-       
+        <div class="mdl-cell--8-col big-card mdl-shadow--4dp">
+            <div id="myfirstchart" style="height: 300px;"></div>
+        </div>
 
-
-
-       
-      <div class="mdl-card mdl-shadow--4dp">
-                <div class="mdl-card__title mdl-card--border">
-                    <i class="material-icons md-96 icon-background">terrain</i>
-                    <div class="mdl-layout-spacer"></div>
-                    <h1>{{total_distance}}</h1>
-                </div>
-                <h2 class="mdl-card__title-text">Total distance</h2>
-                <div class="mdl-card__supporting-text mdl-color--light-blue-700">
-                    <span class="mdl-typography--subhead-color-contrast">
-                        <a href="#" class="mdl-button">Longest Commute</a>
-                    </span>
-                </div>
-                <div class="mdl-card__actions mdl-card--border">
-                    <a href="commute_details" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
-                </div>
-      </div> 
+        <div class="mdl-card mdl-shadow--4dp">
+            <div class="mdl-card__title mdl-card--border">
+                <i class="material-icons md-96 icon-background">terrain</i>
+                <div class="mdl-layout-spacer"></div>
+                <h1>{{total_distance}}</h1>
+            </div>
+            <h2 class="mdl-card__title-text">Total distance</h2>
+            <div class="mdl-card__supporting-text mdl-color--green-600">
+                <span class="mdl-typography--subhead-color-contrast">
+                    <a href="#" class="mdl-button">Longest Commute</a>
+                </span>
+            </div>
+            <div class="mdl-card__actions mdl-card--border">
+                <a href="commute_details" class="mdl-button mdl-js-button mdl-js-ripple-effect">View Details</a>
+            </div>
+        </div>
 
 
 
@@ -93,7 +84,7 @@
                       <h1>{{ total_carbon }}</h1>
                 </div>
                     <h2 class="mdl-card__title-text">kilograms of carbon</h2>
-                  <div class="mdl-card__supporting-text mdl-color--light-blue-500">
+                  <div class="mdl-card__supporting-text mdl-color--green-500">
                     <span class="mdl-typography--subhead-color-contrast">
                         <a href="#" class="mdl-button">Carbon this month</a>
                     </span>
@@ -110,7 +101,7 @@
                     <h1>{{ total_carbon_trees }}</h2>
                 </div>
                     <h2 class="mdl-card__title-text">trees saved</h2>
-                  <div class="mdl-card__supporting-text mdl-color--light-blue-300">
+                  <div class="mdl-card__supporting-text mdl-color--green-400">
                     <span class="mdl-typography--subhead-color-contrast">
                         <a href="#" class="mdl-button">Trees this year</a>
                     </span>
@@ -127,13 +118,16 @@
 
 
 <script>
+function roundToTwo(value) {
+    return(Math.round(value * 100) / 100);
+}
 
 new Morris.Area({
   element: 'myfirstchart',
   data: [{% for ride in monthly_speed %}{
         month: '{{ ride[0] | monthfilter }}',
         value: {{ ride[1] }},
-        value1: {{ (ride[2] / ride[1]) }}
+        value1: roundToTwo({{ (ride[2] / ride[1]) }})
         },{% endfor %}],
   // The name of the data record attribute that contains x-values.
   xkey: 'month',
@@ -165,8 +159,6 @@ new Morris.Area({
   colors: ['#33691E', '#558B2F', '#689F38', '#86BD4C', '#8BC34A', '#9CCC65', '#AED581']
 });
 
-</script>
-<script>
 
 new Morris.Donut({
   element: 'piegoal',
